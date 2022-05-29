@@ -25,7 +25,7 @@
    light_extc = 1, 0.5, 2, 4
    energy_frac = 0.51, 0.45, 0.035, 0.005
    Benthic_Imin = 10
-   Kw = 0.90
+   Kw = 0.9
 /
 
 !-------------------------------------------------------------------------------
@@ -63,9 +63,9 @@
 &time
     timefmt = 2
     start   = '2010-07-01 00:00:00'
-    stop    = '2012-07-30 23:00:00'
+    stop    = '2010-07-02 00:00:00'
     dt      = 3600.0 ! hourly
-    num_days= 730
+    num_days= 1
 !   timezone= +9.5
 /
 
@@ -83,6 +83,8 @@
     num_depths   = 4
 	  lake_depth   = 6.0
     the_depths   = 1.0,3.0,4.0,6.0
+	  !num_heights = 4
+    !the_heights = 1.0  ,  3.0,  4.0,  6.0
     the_temps    = 10.20,10.20,10.20,10.20
     the_sals     = 0.25 , 0.25, 0.25, 0.25
   	num_wq_vars  = 0
@@ -107,7 +109,7 @@
    sw_factor = 1.0
    meteo_fl    = 'met_hourly_AlexSY.csv'
   !meteo_fl    = 'met_Alex_NetLW.csv'
-   wind_factor = 1.0
+   wind_factor = 1.00
    ce = 0.0013
    ch = 0.0013
    cd = 0.0013
@@ -147,9 +149,9 @@
    sed_heat_model = 1
    n_zones = 3
    zone_heights = 3, 5, 6.3
-   sed_heat_Ksoil = 1.2, 1.2, 1.8
-   sed_temp_depth = 0.5, 0.5, 0.2
-   sed_temp_mean = 10, 10, 10
+   sed_heat_Ksoil = 1.2, 1.2, 1.2
+   sed_temp_depth = 0.5, 0.5, 0.5
+   sed_temp_mean = 10.0, 10.0, 10
    sed_temp_amplitude = 0, 0, 0
    sed_temp_peak_doy = 278.4380074, 276.9746504, 275
 /

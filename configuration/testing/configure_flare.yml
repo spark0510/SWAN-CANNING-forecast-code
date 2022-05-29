@@ -36,10 +36,10 @@ da_setup:
     assimilate_first_step: FALSE
     use_obs_constraint: TRUE
 model_settings:
-   ncore: 2
+   ncore: 8
    model_name: glm
    base_GLM_nml: glm3.nml
-   modeled_depths: [0.0, 0.25, 0.75, 1.0,
+   modeled_depths: [0.0, 0.25, 0.50, 0.75, 1.0,
                     1.25, 1.50, 1.75, 2.0,
                     2.25, 2.50, 2.75, 3.0,
                     3.25, 3.50, 3.75, 4.0,

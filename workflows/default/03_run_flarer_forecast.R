@@ -15,6 +15,8 @@ sapply(files.sources, source)
 
 configure_run_file <- "configure_run.yml"
 
+config_set_name <- "default"
+
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
 config <- FLAREr::get_restart_file(config, lake_directory)
@@ -46,22 +48,57 @@ pars_config <- readr::read_csv(file.path(config$file_path$configuration_director
 obs_config <- readr::read_csv(file.path(config$file_path$configuration_directory, config$model_settings$obs_config_file), col_types = readr::cols())
 states_config <- readr::read_csv(file.path(config$file_path$configuration_directory, config$model_settings$states_config_file), col_types = readr::cols())
 
+readr::read_csv(file.path(lake_directory, "data_raw", "DataSetExport-Water Temp.Best Available--Continuous@A4261133-20220518222148.csv"), skip = 1) |> 
+  rename(time = `Timestamp (UTC+09:30)`,
+         observed = `Value (°C)`) |> 
+  select(time, observed) |> 
+  mutate(time == lubridate::force_tz(time, tzone = "Australia/Adelaide"),
+         time == lubridate::with_tz(time, tzone = "UTC"),
+         date = lubridate::as_date(time),
+         hour = lubridate::hour(time)) |>
+  group_by(date, hour) |> 
+  summarize(observed = mean(observed, na.rm = TRUE), .groups = "drop") |> 
+  mutate(variable = "temperature",
+         depth = 1,
+         site_id = "ALEX",
+         time = lubridate::as_datetime(date) + lubridate::hours(hour)) |> 
+  select(site_id, time, depth, variable, observed) |> 
+  write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")))
 
 #Download and process observations (already done)
 
-met_out <- FLAREr::generate_glm_met_files(obs_met_file = file.path(config$file_path$qaqc_data_directory, paste0("observed-met_",config$location$site_id,".nc")),
-                                          out_dir = config$file_path$execute_directory,
-                                          forecast_dir = forecast_dir,
-                                          config = config)
+#met_out <- FLAREr::generate_glm_met_files(obs_met_file = file.path(config$file_path$qaqc_data_directory, paste0("observed-met_",config$location$site_id,".nc")),
+#                                          out_dir = config$file_path$execute_directory,
+#                                          forecast_dir = forecast_dir,
+#                                          config = config)
 
 met_out$filenames <- met_out$filenames[!stringr::str_detect(met_out$filenames, "ens00")]
 
+file.copy(file.path(config$file_path$data_directory, "met_hourly_AlexSY.csv"),
+          file.path(config$file_path$execute_directory, "met.csv"))
 
-inflow_outflow_files <- FLAREr::create_glm_inflow_outflow_files(inflow_file_dir = inflow_file_dir,
-                                                                inflow_obs = file.path(config$file_path$qaqc_data_directory, paste0(config$location$site_id, "-targets-inflow.csv")),
-                                                                working_directory = config$file_path$execute_directory,
-                                                                config = config,
-                                                                state_names = states_config$state_names)
+met_out <- NULL
+met_out$filenames <- file.path(config$file_path$execute_directory, "met.csv")
+
+
+#inflow_outflow_files <- FLAREr::create_glm_inflow_outflow_files(inflow_file_dir = inflow_file_dir,
+#                                                                inflow_obs = file.path(config$file_path$qaqc_data_directory, paste0(config$location$site_id, "-targets-inflow.csv")),
+#                                                                working_directory = config$file_path$execute_directory,
+#                                                                config = config,
+#                                                                state_names = states_config$state_names)
+
+
+file.copy(file.path(config$file_path$data_directory, "inflow_Well_WQ_DOcorr_v2.csv"),
+          file.path(config$file_path$execute_directory, "inflow.csv"))
+
+file.copy(file.path(config$file_path$data_directory, "outflow_Well_v2.csv"),
+          file.path(config$file_path$execute_directory, "outflow.csv"))
+
+inflow_outflow_files <- NULL
+inflow_outflow_files$inflow_file_names <- file.path(config$file_path$execute_directory, "inflow.csv")
+inflow_outflow_files$outflow_file_names <- file.path(config$file_path$execute_directory, "outflow.csv")
+
+  
 
 management <- NULL
 
@@ -112,6 +149,10 @@ da_forecast_output <- FLAREr::run_da_forecast(states_init = init$states,
 # Save forecast
 
 saved_file <- FLAREr::write_forecast_netcdf(da_forecast_output = da_forecast_output,
+                                            forecast_output_directory = config$file_path$forecast_output_directory,
+                                            use_short_filename = TRUE)
+
+forecast_file <- FLAREr::write_forecast_csv(da_forecast_output = da_forecast_output,
                                             forecast_output_directory = config$file_path$forecast_output_directory,
                                             use_short_filename = TRUE)
 
