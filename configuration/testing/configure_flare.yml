@@ -29,7 +29,7 @@ metadata:
       id: INSERT ORCID
 da_setup:
     da_method: enkf
-    par_fit_method: inflate
+    par_fit_method: perturb_const
     ensemble_size:  100
     localization_distance: .na #distance in meters were covariances in the model error are used
     no_negative_states: TRUE
