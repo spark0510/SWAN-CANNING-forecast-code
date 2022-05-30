@@ -37,3 +37,5 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+data_raw/DataSetExport-Water Temp.Best Available--Continuous@A4261133-20220518222148.csv
