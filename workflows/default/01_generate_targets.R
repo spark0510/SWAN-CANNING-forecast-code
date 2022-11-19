@@ -48,7 +48,7 @@ readr::read_csv(file.path(lake_directory, "data_raw", "current_water_temp.csv"),
 
 message("Successfully generated targets")
 
-FLAREr::put_targets(site_id = config_obs$site_id,
+FLAREr::put_targets(site_id =  config$location$site_id,
                     cleaned_insitu_file,
                     cleaned_met_file = NA,
                     cleaned_inflow_file = NA,
