@@ -100,12 +100,12 @@
 !-------------------------------------------------------------------------------
 &meteorology
    met_sw      = .true.
-   lw_type     = 'LW_CC'
-   rain_sw     = .true.
-   atm_stab    = .false.
+   lw_type     = 'LW_IN'
+   rain_sw     = .false.
+   atm_stab    = 0
    subdaily    = .true.
    rad_mode    = 1
-   cloud_mode  = 1
+   cloud_mode  = 4
    sw_factor = 1.0
    meteo_fl    = 'met_hourly_AlexSY.csv'
   !meteo_fl    = 'met_Alex_NetLW.csv'
@@ -120,7 +120,7 @@
    coef_inf_entrain = 0.
    ! flow from Loc1 Wellington, no temp and no oxy aval,
    ! test with temp observed at surf (but ends 2011 Apr) or const T check
-   num_inflows    =  1
+   num_inflows    =  0
    names_of_strms = 'inflow_1'
    strm_hf_angle  = 65.0
    strmbd_slope   =  4.0
@@ -133,7 +133,7 @@
 
 !-------------------------------------------------------------------------------
 &outflow
-   num_outlet     = 1
+   num_outlet     = 0
    outlet_type    = 1
    flt_off_sw     = .false.
    outl_elvs      = 0.5
