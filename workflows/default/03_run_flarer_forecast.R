@@ -10,8 +10,8 @@ if(file.exists("~/.aws")){
 
 lake_directory <- here::here()
 update_run_config <- TRUE
-files.sources <- list.files(file.path(lake_directory, "R"), full.names = TRUE)
-sapply(files.sources, source)
+#files.sources <- list.files(file.path(lake_directory, "R"), full.names = TRUE)
+#sapply(files.sources, source)
 
 configure_run_file <- "configure_run.yml"
 
@@ -140,8 +140,6 @@ FLAREr::plotting_general_2(file_name = saved_file,
 
 message("Putting forecast")
 FLAREr::put_forecast(saved_file, eml_file_name = NULL, config)
-
-FLAREr::update_run_config(config, lake_directory, configure_run_file, saved_file, new_horizon = forecast_horizon, day_advance = days_between_forecasts)
 
 FLAREr::update_run_config(config, lake_directory, configure_run_file, saved_file, new_horizon = 16, day_advance = 1)
 

@@ -21,7 +21,10 @@ lake_directory <- here::here()
 #config_obs <- FLAREr::initialize_obs_processing(lake_directory, observation_yml = "observation_processing.yml", config_set_name)
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
-readr::read_csv(file.path(lake_directory, "data_raw", "DataSetExport-Water Temp.Best Available--Continuous@A4261133-20220518222148.csv"), skip = 1) |> 
+download.file(url = "https://water.data.sa.gov.au/Export/DataSet?DataSet=Water%20Temp.Best%20Available--Continuous%40A4261133&DateRange=Days30&ExportFormat=csv&Compressed=false&RoundData=False&Unit=degC&Timezone=9.5&_=1668874574781",
+              destfile = file.path(lake_directory, "data_raw", "current_water_temp.csv"))
+
+readr::read_csv(file.path(lake_directory, "data_raw", "current_water_temp.csv"), skip = 1) |> 
   rename(time = `Timestamp (UTC+09:30)`,
          observed = `Value (°C)`) |> 
   select(time, observed) |> 
