@@ -5,6 +5,28 @@ file_path:
    configuration_directory: .na
    execute_directory: .na
    forecast_output_directory: .na
+s3:
+  drivers:
+    endpoint: s3.flare-forecast.org
+    bucket: drivers/noaa/gefs-v12
+  inflow_drivers:
+    endpoint: s3.flare-forecast.org
+    bucket: drivers/inflow/alex_v2/parquet
+  targets:
+    endpoint: s3.flare-forecast.org
+    bucket: targets/alex_v2
+  forecasts:
+    endpoint: s3.flare-forecast.org
+    bucket: forecasts
+  forecasts_parquet:
+    endpoint: s3.flare-forecast.org
+    bucket: forecasts/parquet
+  warm_start:
+    endpoint: s3.flare-forecast.org
+    bucket: restart/alex_v2
+  scores:
+    endpoint: s3.flare-forecast.org
+    bucket: scores/parquet
 location:
    site_id: ALEX
    name: Lake Alexandrina
@@ -36,10 +58,10 @@ da_setup:
     assimilate_first_step: FALSE
     use_obs_constraint: TRUE
 model_settings:
-   ncore: 2
+   ncore: 4
    model_name: glm
    base_GLM_nml: glm3.nml
-   modeled_depths: [0.0, 0.25, 0.75, 1.0,
+   modeled_depths: [0.0, 0.25, 0.50, 0.75, 1.0,
                     1.25, 1.50, 1.75, 2.0,
                     2.25, 2.50, 2.75, 3.0,
                     3.25, 3.50, 3.75, 4.0,
@@ -73,4 +95,4 @@ uncertainty:
    met_downscale: TRUE
    inflow_process: TRUE
 output_settings:
-   diagnostics_names:  [extc_coef]
+   diagnostics_names:  [extc]

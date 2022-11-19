@@ -13,29 +13,31 @@ lake_directory <- here::here()
 
 #' Source the R files in the repository
 
-files.sources <- list.files(file.path(lake_directory, "R"), full.names = TRUE)
-sapply(files.sources, source)
+#files.sources <- list.files(file.path(lake_directory, "R"), full.names = TRUE)
+#sapply(files.sources, source)
 
 #' Generate the `config_obs` object and create directories if necessary
 
-config_obs <- FLAREr::initialize_obs_processing(lake_directory, observation_yml = "observation_processing.yml", config_set_name)
+#config_obs <- FLAREr::initialize_obs_processing(lake_directory, observation_yml = "observation_processing.yml", config_set_name)
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
 readr::read_csv(file.path(lake_directory, "data_raw", "DataSetExport-Water Temp.Best Available--Continuous@A4261133-20220518222148.csv"), skip = 1) |> 
   rename(time = `Timestamp (UTC+09:30)`,
          observed = `Value (°C)`) |> 
   select(time, observed) |> 
-  mutate(time == lubridate::force_tz(time, tzone = "Australia/Adelaide"),
-         time == lubridate::with_tz(time, tzone = "UTC"),
+  mutate(time = lubridate::force_tz(time, tzone = "Etc/GMT+9"),
+         time = time - lubridate::minutes(30),
+         time = lubridate::with_tz(time, tzone = "UTC"),
          date = lubridate::as_date(time),
          hour = lubridate::hour(time)) |>
   group_by(date, hour) |> 
-  summarize(observed = mean(observed, na.rm = TRUE), .groups = "drop") |> 
+  summarize(observation = mean(observed, na.rm = TRUE), .groups = "drop") |> 
   mutate(variable = "temperature",
-         depth = 1,
+         depth = 0.5,
          site_id = "ALEX",
-         time = lubridate::as_datetime(date) + lubridate::hours(hour)) |> 
-  select(site_id, time, depth, variable, observed) |> 
+         datetime = lubridate::as_datetime(date) + lubridate::hours(hour)) |> 
+  filter(hour == 0) |> 
+  select(site_id, datetime, depth, variable, observation) |> 
   write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")))
 
 #' Move targets to s3 bucket
