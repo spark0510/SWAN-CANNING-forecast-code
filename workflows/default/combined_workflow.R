@@ -16,8 +16,21 @@ if(!noaa_ready){
   config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
   lapsed_time <- as.numeric(as.duration(Sys.time() - lubridate::as_datetime(config$run_config$forecast_start_datetime)))/(60*60)
   if(lapsed_time > 24){
-    FLAREr::update_run_config(config, lake_directory, configure_run_file, saved_file = NA, new_horizon = NA, day_advance = 1, new_start_datetime = FALSE)
-  }
+    FLAREr::update_run_config2(lake_directory = lake_directory,
+                               configure_run_file = configure_run_file, 
+                               restart_file = basename(output$restart_file), 
+                               start_datetime = lubridate::as_datetime(config$run_config$start_datetime), 
+                               end_datetime = NA, 
+                               forecast_start_datetime = lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1),  
+                               forecast_horizon = config$run_config$forecast_horizon,
+                               sim_name = config$run_config$sim_name, 
+                               site_id = config$location$site_id,
+                               configure_flare = config$run_config$configure_flare, 
+                               configure_obs = config$run_config$configure_obs, 
+                               use_s3 = config$run_config$use_s3,
+                               bucket = config$s3$warm_start$bucket,
+                               endpoint = config$s3$warm_start$endpoint,
+                               use_https = TRUE)  }
 }
 
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
@@ -75,7 +88,7 @@ if(noaa_ready){
                      start_datetime = lubridate::as_datetime(config$run_config$start_datetime) + lubridate::days(1), 
                      end_datetime = NA, 
                      forecast_start_datetime = lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1),  
-                     forecast_horizon = 16.0,
+                     forecast_horizon = config$run_config$forecast_horizon,
                      sim_name = config$run_config$sim_name, 
                      site_id = config$location$site_id,
                      configure_flare = config$run_config$configure_flare, 
