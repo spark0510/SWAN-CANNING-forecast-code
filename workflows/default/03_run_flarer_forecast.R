@@ -23,15 +23,10 @@ config <- FLAREr::get_restart_file(config, lake_directory)
 
 message(paste0("     Running forecast that starts on: ", config$run_config$start_datetime))
 
-#forecast_dir <- NULL
 
-#Need to remove the 00 ensemble member because it only goes 16-days in the future
 pars_config <- readr::read_csv(file.path(config$file_path$configuration_directory, config$model_settings$par_config_file), col_types = readr::cols())
 obs_config <- readr::read_csv(file.path(config$file_path$configuration_directory, config$model_settings$obs_config_file), col_types = readr::cols())
 states_config <- readr::read_csv(file.path(config$file_path$configuration_directory, config$model_settings$states_config_file), col_types = readr::cols())
-
-
-#Download and process observations (already done)
 
 
 met_out <- FLAREr::generate_met_files_arrow(obs_met_file = NULL,

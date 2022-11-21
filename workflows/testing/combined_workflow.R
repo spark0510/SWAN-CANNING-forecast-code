@@ -19,14 +19,14 @@ configure_run_file <- "configure_run.yml"
 
 num_forecasts <- 10 #52 * 3 - 3
 #num_forecasts <- 1#19 * 7 + 1
-days_between_forecasts <- 7
+days_between_forecasts <- 1
 forecast_horizon <- 16 #32
-starting_date <- as_date("2020-09-25")
+starting_date <- as_date("2022-11-10")
 #second_date <- as_date("2020-12-01") - days(days_between_forecasts)
 #starting_date <- as_date("2018-07-20")
 #second_date <- as_date("2019-01-01") - days(days_between_forecasts)
 #second_date <- as_date("2020-12-31") #- days(days_between_forecasts)
-second_date <- as_date("2020-09-30") #- days(days_between_forecasts)
+second_date <- as_date("2022-11-19") #- days(days_between_forecasts)
 
 
 
@@ -67,7 +67,7 @@ use_s3 <- FALSE
  
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
-d <- readr::read_csv(file.path(lake_directory, "data_raw", "DataSetExport-Water Temp.Best Available--Continuous@A4261133-20220518222148.csv"), skip = 1) |> 
+d <- readr::read_csv(file.path(lake_directory, "data_raw", "current_water_temp.csv"), skip = 1) |> 
   rename(time = `Timestamp (UTC+09:30)`,
          observed = `Value (°C)`) |> 
   select(time, observed) |> 
