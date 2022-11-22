@@ -80,8 +80,6 @@ if(noaa_ready){
                               configure_run_file = configure_run_file,
                               config_set_name = config_set_name)
   
-  config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
-  
   FLAREr::update_run_config2(lake_directory = lake_directory,
                      configure_run_file = configure_run_file, 
                      restart_file = basename(output$restart_file), 
