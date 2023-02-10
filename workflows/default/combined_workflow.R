@@ -42,7 +42,8 @@ if(noaa_ready){
                 destfile = file.path(lake_directory, "data_raw", "current_water_temp.csv"))
   
   cleaned_insitu_file <- file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv"))
-  readr::read_csv(file.path(lake_directory, "data_raw", "current_water_temp.csv"), skip = 1, show_col_types = FALSE) |> 
+  #readr::read_csv(file.path(lake_directory, "data_raw", "current_water_temp.csv"), skip = 1, show_col_types = FALSE) |>
+  readr::read_csv(file.path(lake_directory, "data_raw", "current_water_temp.csv"), skip = 3, show_col_types = FALSE, col_names = c('Timestamp (UTC+09:30)', 'Value (°C)')) |> 
     rename(time = `Timestamp (UTC+09:30)`,
            observed = `Value (°C)`) |> 
     select(time, observed) |> 
