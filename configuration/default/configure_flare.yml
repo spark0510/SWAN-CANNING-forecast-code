@@ -4,10 +4,10 @@ s3:
     bucket: drivers/noaa/gefs-v12-reprocess
   inflow_drivers:
     endpoint: s3.flare-forecast.org
-    bucket: drivers/inflow/alex_v2/parquet
+    bucket: drivers/inflow/swan/parquet
   targets:
     endpoint: s3.flare-forecast.org
-    bucket: targets/alex_v2
+    bucket: targets/swan
   forecasts:
     endpoint: s3.flare-forecast.org
     bucket: forecasts
@@ -16,15 +16,15 @@ s3:
     bucket: forecasts/parquet
   warm_start:
     endpoint: s3.flare-forecast.org
-    bucket: restart/alex_v2
+    bucket: restart/swan
   scores:
     endpoint: s3.flare-forecast.org
     bucket: scores/parquet
 location:
-   site_id: ALEX
-   name: Lake Alexandrina
-   latitude: -35   #Degrees North
-   longitude: 138  #Degrees East
+   site_id: swan
+   name: Swan-Canning River
+   latitude: -32   #Degrees North
+   longitude: 116  #Degrees East
 da_setup:
     da_method: enkf
     par_fit_method: perturb_const
@@ -32,7 +32,7 @@ da_setup:
     no_negative_states: TRUE
     assimilate_first_step: FALSE
     use_obs_constraint: TRUE
-    obs_filename: ALEX-targets-insitu.csv
+    obs_filename: swan-targets-insitu.csv
 model_settings:
    ncore: 4
    model_name: glm

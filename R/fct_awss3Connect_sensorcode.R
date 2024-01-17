@@ -25,21 +25,6 @@ awss3Connect_sensorcode <- function(sensorCodes, code_df){
   
   # Now set bucket contents as objects
   bucket <- 'scevo-data'
-    
-  # fetchedData <- aws.s3::s3read_using(FUN = utils::read.csv,
-  #                                     check.names = FALSE,
-  #                                     #encoding = "UTF-8",
-  #                                     # show_col_types = FALSE,
-  #                                     # lazy = FALSE,
-  #                                     # progress = FALSE,
-  #                                     object = filename,
-  #                                     bucket = bucket,
-  #                                     filename = basename(filename),
-  #                                     opts = list(
-  #                                       base_url = "projects.pawsey.org.au",
-  #                                       region = "",
-  #                                       key = "2f1a9d81bdf24a178b2bd18d530e959b",
-  #                                       secret = "e062073c1faf488cb4209ba8de2eb483"))
   
   fetchedData  <- data.frame()
   
