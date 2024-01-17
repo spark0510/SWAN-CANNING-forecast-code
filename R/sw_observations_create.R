@@ -23,4 +23,4 @@ obs_aggregate_df <- obs_df |>
   mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "Australia/Perth")) |> 
   select(datetime, site_id, depth, observation, variable)
 
-write.csv(obs_aggregate_df, 'targets/swan_canning_observations.csv')
+write.csv(obs_aggregate_df, 'targets/swan-targets-insitu.csv')
