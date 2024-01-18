@@ -4,7 +4,7 @@ source('R/fct_awss3Connect_sensorcode.R')
 
 sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
 
-obs_df <- awss3Connect_sensorcode(sensorCodes = c('sensor_repository_81684','sensor_repository_81681'), code_df = sensorcode_df)
+obs_df <- awss3Connect_sensorcode(sensorCodes = c('sensor_repository_81684','sensor_repository_81681', 'sensor_repository_81685'), code_df = sensorcode_df)
 
 obs_df$Date <- as.Date(obs_df$datetime, tz = "Australia/Perth")
 
@@ -15,12 +15,13 @@ obs_df$observation <- obs_df$Data
 
 
 obs_aggregate_df <- obs_df |> 
-  group_by(Date) |> 
-  filter(variable == 'Temperature') |> 
+  filter(variable %in% c('Temperature', 'Salinity (ppt)')) |> 
+  group_by(Date, variable) |> 
+  #filter(variable %in% c('Temperature', 'Salinity (ppt)')) |> 
   mutate(day_avg = mean(Data, na.rm = TRUE)) |> 
   ungroup() |> 
-  distinct(Date, .keep_all = TRUE) |> 
+  distinct(Date, variable, .keep_all = TRUE) |> 
   mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "Australia/Perth")) |> 
   select(datetime, site_id, depth, observation, variable)
 
-write.csv(obs_aggregate_df, 'targets/swan-targets-insitu.csv')
+#write.csv(obs_aggregate_df, 'targets/swan-targets-insitu.csv')

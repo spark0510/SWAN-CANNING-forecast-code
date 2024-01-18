@@ -1,7 +1,10 @@
 s3:
   drivers:
-    endpoint: s3.flare-forecast.org
-    bucket: drivers/noaa/gefs-v12-reprocess
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/drivers/met
+  # drivers:
+  #   endpoint: s3.flare-forecast.org
+  #   bucket: drivers/noaa/gefs-v12-reprocess
   inflow_drivers:
     endpoint: s3.flare-forecast.org
     bucket: drivers/inflow/CANN/parquet
@@ -58,16 +61,20 @@ default_init:
 inflow:
    include_inflow: FALSE
    use_forecasted_inflow: FALSE
-   forecast_inflow_model: inflow/FLOWS-NOAAGEFS-AR1/CANN/0
-   observed_inflow_filename: CANN-targets-inflow.csv
+   forecast_inflow_model: inflow/FLOWS-NOAAGEFS-AR1/ALEX/0
+   observed_inflow_filename: ALEX-targets-inflow.csv
    inflow_variables: [time, FLOW, TEMP, SALT]
    use_ler_vars: FALSE
 met:
    use_forecasted_met: TRUE
    use_observed_met: FALSE
-   local_directory: drivers/noaa/gefs-v12/stage2/parquet
-   observed_met_filename: CANN-targets-insitu.csv
+   local_directory: .na
+   observed_met_filename: .na
    use_ler_vars: FALSE
+   use_openmeteo: TRUE
+   openmeteo_api: ensemble_forecast
+   openmeteo_model: bom #check to see if this is correct identifier
+   use_openmeteo_archive: FALSE
 uncertainty:
    observation: TRUE
    process: TRUE
