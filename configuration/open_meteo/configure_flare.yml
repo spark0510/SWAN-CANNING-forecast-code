@@ -61,9 +61,9 @@ default_init:
 inflow:
    include_inflow: FALSE
    use_forecasted_inflow: FALSE
-   forecast_inflow_model: inflow/FLOWS-NOAAGEFS-AR1/ALEX/0
-   observed_inflow_filename: ALEX-targets-inflow.csv
-   inflow_variables: [time, FLOW, TEMP, SALT]
+   forecast_inflow_model: .na
+   observed_inflow_filename: .na
+   inflow_variables: .na
    use_ler_vars: FALSE
 met:
    use_forecasted_met: TRUE
@@ -73,8 +73,8 @@ met:
    use_ler_vars: FALSE
    use_openmeteo: TRUE
    openmeteo_api: ensemble_forecast
-   openmeteo_model: bom #check to see if this is correct identifier
-   use_openmeteo_archive: FALSE
+   openmeteo_model: bom #australian model
+   use_openmeteo_archive: TRUE
 uncertainty:
    observation: TRUE
    process: TRUE

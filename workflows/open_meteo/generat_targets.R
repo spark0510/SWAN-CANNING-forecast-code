@@ -4,7 +4,7 @@ library(lubridate)
 source('R/fct_awss3Connect_sensorcode.R')
 
 lake_directory <- here::here()
-config_set_name <- "default"
+config_set_name <- "open_meteo"
 forecast_site <- c("CANN")
 #configure_run_file <- paste0("configure_run_",forecast_site,".yml")
 configure_run_file <- "configure_run.yml"
@@ -27,8 +27,8 @@ obs_dedup <- obs_download |> distinct(datetime, Height, variable, .keep_all = TR
 obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(Salinity = `Salinity (ppt)`)
 
 obs_df <- obs_df_wide |> pivot_longer(cols = c('Temperature','Salinity'),
-                                           names_to = 'variable', 
-                                           values_to = 'var_obs')
+                                      names_to = 'variable', 
+                                      values_to = 'var_obs')
 
 obs_df$Date <- as.Date(obs_df$datetime, tz = "Australia/Perth")
 

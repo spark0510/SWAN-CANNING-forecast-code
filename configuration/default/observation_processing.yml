@@ -4,8 +4,8 @@
 
 lake_name_code: CANN
 lake_name: Swan-Canning
-   latitude: -32   #Degrees North
-   longitude: 116  #Degrees East
+latitude: -32   #Degrees North
+longitude: 116  #Degrees East
 
 #Time zone that GLM is run in
 #Currently needed to be GMT so that it interfaces with the NOAA forecast
