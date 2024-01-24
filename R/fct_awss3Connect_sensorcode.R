@@ -30,6 +30,7 @@ awss3Connect_sensorcode <- function(sensorCodes, code_df){
   
   for (i in sensorCodes) {
     object <- paste0("/arms/",i,".csv")
+    print(object)
     #object <- paste0("/arms/",sensorCodes[i],".csv")
     sensorData <- aws.s3::s3read_using(FUN = utils::read.csv,
                                        check.names = FALSE,

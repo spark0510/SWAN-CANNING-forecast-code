@@ -1,12 +1,16 @@
 library(tidyverse)
 library(lubridate)
+
+devtools::install_github('FLARE-forecast/RopenMeteo')
+library(RopenMeteo)
+
 lake_directory <- here::here()
 setwd(lake_directory)
 forecast_site <- c("CANN")
 
 #configure_run_file <- paste0("configure_run_",forecast_site,".yml")
 configure_run_file <- "configure_run.yml"
-config_set_name <- "default"
+config_set_name <- "open_meteo"
 
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 

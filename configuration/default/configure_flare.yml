@@ -58,16 +58,23 @@ default_init:
 inflow:
    include_inflow: FALSE
    use_forecasted_inflow: FALSE
-   forecast_inflow_model: inflow/FLOWS-NOAAGEFS-AR1/CANN/0
-   observed_inflow_filename: CANN-targets-inflow.csv
-   inflow_variables: [time, FLOW, TEMP, SALT]
+   forecast_inflow_model: .na
+   observed_inflow_filename: .na
+   inflow_variables: .na
    use_ler_vars: FALSE
 met:
    use_forecasted_met: TRUE
    use_observed_met: FALSE
-   local_directory: drivers/noaa/gefs-v12/stage2/parquet
-   observed_met_filename: CANN-targets-insitu.csv
+   local_directory: .na
+   observed_met_filename: CANN-targets-met.csv
    use_ler_vars: FALSE
+   forecast_lag_days: 1
+   #observed_met_filename: CANN-targets-met.csv
+   #use_forecasted_met: TRUE
+   #use_observed_met: FALSE
+   #local_directory: drivers/noaa/gefs-v12/stage2/parquet
+   #observed_met_filename: CANN-targets-insitu.csv
+   #use_ler_vars: FALSE
 uncertainty:
    observation: TRUE
    process: TRUE
