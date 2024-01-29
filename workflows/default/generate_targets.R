@@ -27,13 +27,13 @@ obs_download <- awss3Connect_sensorcode(sensorCodes = c('sensor_repository_81684
 # remove duplicates 
 obs_dedup <- obs_download |> distinct(datetime, Height, variable, .keep_all = TRUE)
 
-obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(Salinity = `Salinity (ppt)`)
+obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(salt = `Salinity (ppt)`, temperature = 'Temperature')
 
-obs_df <- obs_df_wide |> pivot_longer(cols = c('Temperature','Salinity'),
+obs_df <- obs_df_wide |> pivot_longer(cols = c('temperature','salt'),
                                            names_to = 'variable', 
-                                           values_to = 'var_obs')
+                                           values_to = 'observation')
 
-obs_df$Date <- as.Date(obs_df$datetime, tz = "Australia/Perth")
+#obs_df$Date <- as.Date(obs_df$datetime, tz = "Australia/Perth")
 
 ## assign columns
 obs_df$site_id <- 'CANN'
@@ -43,13 +43,14 @@ obs_df$site_id <- 'CANN'
 
 cleaned_insitu_file <- obs_df |> 
   #filter(variable %in% c('Temperature', 'Salinity (ppt)')) |> 
-  group_by(Date, variable) |> 
+  #group_by(Date, variable) |> 
   #filter(variable %in% c('Temperature', 'Salinity (ppt)')) |> 
-  mutate(observation = mean(var_obs, na.rm = TRUE)) |> 
-  ungroup() |> 
-  distinct(Date, variable, .keep_all = TRUE) |> 
-  mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "Australia/Perth")) |> 
-  rename(depth = Depth) |> 
+  #mutate(observation = mean(var_obs, na.rm = TRUE)) |> 
+  #ungroup() |> 
+  #distinct(Date, variable, .keep_all = TRUE) |> 
+  #mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "Australia/Perth")) |> 
+  mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6)
+  #rename(depth = Depth) |> 
   select(datetime, site_id, depth, observation, variable)
 
 write_csv(cleaned_insitu_file,file.path(lake_directory,"targets", 
@@ -70,7 +71,7 @@ met_dedup <- met_download |> distinct(datetime, variable, .keep_all = TRUE)
 #                                      names_to = 'variable', 
 #                                      values_to = 'var_obs')
 
-met_dedup$Date <- as.Date(met_dedup$datetime, tz = "Australia/Perth")
+#met_dedup$Date <- as.Date(met_dedup$datetime, tz = "Australia/Perth")
 
 ## assign columns
 met_dedup$site_id <- 'CANN'
@@ -80,13 +81,13 @@ met_dedup$site_id <- 'CANN'
 
 cleaned_met_file <- met_dedup |> 
   #filter(variable %in% c('Temperature', 'Salinity (ppt)')) |> 
-  group_by(Date, variable) |> 
-  #filter(variable %in% c('Temperature', 'Salinity (ppt)')) |> 
-  mutate(observation = mean(Data, na.rm = TRUE)) |> 
-  ungroup() |> 
-  distinct(Date, variable, .keep_all = TRUE) |> 
-  mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "Australia/Perth")) |> 
-  #rename(depth = Depth) |> 
+  # group_by(Date, variable) |> 
+  # #filter(variable %in% c('Temperature', 'Salinity (ppt)')) |> 
+  # mutate(observation = mean(Data, na.rm = TRUE)) |> 
+  # ungroup() |> 
+  # distinct(Date, variable, .keep_all = TRUE) |> 
+  # mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "Australia/Perth")) |> 
+  rename(observation = Data) |> 
   select(datetime, site_id, observation, variable)
 
 write_csv(cleaned_met_file,file.path(lake_directory,"targets", 
