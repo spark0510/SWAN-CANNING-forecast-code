@@ -23,12 +23,12 @@ sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
 
 ### GENERATE INSITU Inflow TARGETS
 cann_inflow_download <- awss3Connect_sensorcode(sensorCodes = c('sensor_repository_00804'), code_df = sensorcode_df)
-ad_inflow_download <- awss3Connect_sensorcode(sensorCodes = c('sensor_repository_00752'), code_df = sensorcode_df)
+south_inflow_download <- awss3Connect_sensorcode(sensorCodes = c('sensor_repository_00752'), code_df = sensorcode_df)
 
 cann_inflow_download$site_id <- 'cann_river'
-ad_inflow_download$site_id <- 'southern_ad_river'
+south_inflow_download$site_id <- 'south_river'
 
-inflow_combined <- dplyr::bind_rows(cann_inflow_download, ad_inflow_download)
+inflow_combined <- dplyr::bind_rows(cann_inflow_download, south_inflow_download)
 
 inflow_combined$Date <- as.Date(inflow_combined$datetime, tz = "Australia/Perth")
 
@@ -58,10 +58,20 @@ plotting_df <- daily_inflow_combined |>
   #filter(combined_rate < 50000)
 ## PLOTTING 
 
+## plot all years
 ggplot(plotting_df, aes(x=Date)) + 
   geom_line(aes(y = combined_rate), color = "darkblue") + 
   geom_line(aes(y = cann_river), color="darkorange") +
-  geom_line(aes(y = southern_ad_river), color='darkgreen') +
+  geom_line(aes(y = south_river), color='darkgreen') +
   #ylim(c(0,50000))
+  ylab('Daily Inflow Rate (m3/day)') +
+  scale_colour_manual(values = c("darkblue", "darkorange", "darkgreen"))
+
+## annual plots
+ggplot(plotting_df, aes(x=Date)) + 
+  geom_line(aes(y = combined_rate), color = "darkblue") + 
+  geom_line(aes(y = cann_river), color="darkorange") +
+  geom_line(aes(y = south_river), color='darkgreen') +
+  xlim(c(as.Date('2022-01-01'),as.Date('2023-01-01'))) +
   ylab('Daily Inflow Rate (m3/day)') +
   scale_colour_manual(values = c("darkblue", "darkorange", "darkgreen"))

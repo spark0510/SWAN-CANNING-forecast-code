@@ -13,18 +13,18 @@ config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_se
 # Generate the targets
 source('workflows/default/generate_targets.R')
 # Read in the targets
-cuts <- tibble::tibble(cuts = as.integer(factor(config$model_settings$modeled_depths)),
-                       depth = config$model_settings$modeled_depths)
-
-cleaned_insitu_file <- file.path(lake_directory, "targets", config$location$site_id, config$da_setup$obs_filename)
-readr::read_csv(cleaned_insitu_file, show_col_types = FALSE) |> 
-  dplyr::mutate(cuts = cut(depth, breaks = config$model_settings$modeled_depths, include.lowest = TRUE, right = FALSE, labels = FALSE)) |>
-  dplyr::filter(lubridate::hour(datetime) == 0) |>
-  dplyr::group_by(cuts, variable, datetime, site_id) |>
-  dplyr::summarize(observation = mean(observation, na.rm = TRUE), .groups = "drop") |>
-  dplyr::left_join(cuts, by = "cuts") |>
-  dplyr::select(site_id, datetime, variable, depth, observation) |>
-  write_csv(cleaned_insitu_file)
+# cuts <- tibble::tibble(cuts = as.integer(factor(config$model_settings$modeled_depths)),
+#                        depth = config$model_settings$modeled_depths)
+# 
+# cleaned_insitu_file <- file.path(lake_directory, "targets", config$location$site_id, config$da_setup$obs_filename)
+# readr::read_csv(cleaned_insitu_file, show_col_types = FALSE) |> 
+#   dplyr::mutate(cuts = cut(depth, breaks = config$model_settings$modeled_depths, include.lowest = TRUE, right = FALSE, labels = FALSE)) |>
+#   dplyr::filter(lubridate::hour(datetime) == 0) |>
+#   dplyr::group_by(cuts, variable, datetime, site_id) |>
+#   dplyr::summarize(observation = mean(observation, na.rm = TRUE), .groups = "drop") |>
+#   dplyr::left_join(cuts, by = "cuts") |>
+#   dplyr::select(site_id, datetime, variable, depth, observation) |>
+#   write_csv(cleaned_insitu_file)
 
 # Move targets to s3 bucket
 

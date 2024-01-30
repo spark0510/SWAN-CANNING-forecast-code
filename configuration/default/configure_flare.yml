@@ -43,7 +43,7 @@ model_settings:
    states_config_file: states_config.csv
    depth_model_sd_config_file: depth_model_sd.csv
 default_init:
-   lake_depth: 2.0  #not a modeled state
+   lake_depth: 6.0  #not a modeled state
    temp: [10.20,10.20,10.20,10.20]
    temp_depths: [0.5,1.0,1.5,2.0]
    salinity: 0.25
@@ -60,14 +60,14 @@ inflow:
 met:
    use_forecasted_met: TRUE
    use_observed_met: FALSE
-   #local_directory: .na
+   local_directory: .na
    observed_met_filename: CANN-targets-met.csv
    use_ler_vars: FALSE
    forecast_lag_days: 1
    #observed_met_filename: CANN-targets-met.csv
    #use_forecasted_met: TRUE
    #use_observed_met: FALSE
-   local_directory: drivers/noaa/gefs-v12/stage2/parquet
+   #local_directory: drivers/noaa/gefs-v12/stage2/parquet
    #observed_met_filename: CANN-targets-insitu.csv
    #use_ler_vars: FALSE
 uncertainty:

@@ -43,12 +43,14 @@ obs_df$site_id <- 'CANN'
 
 cleaned_insitu_file <- obs_df |> 
   #filter(variable %in% c('Temperature', 'Salinity (ppt)')) |> 
-  #group_by(Date, variable) |> 
+  mutate(Date = as.Date(datetime)) |> 
+  filter(lubridate::hour(datetime) == 0) |> # only want midnight observations for the daily value
+  group_by(Date, variable) |> 
   #filter(variable %in% c('Temperature', 'Salinity (ppt)')) |> 
-  #mutate(observation = mean(var_obs, na.rm = TRUE)) |> 
-  #ungroup() |> 
-  #distinct(Date, variable, .keep_all = TRUE) |> 
-  #mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "Australia/Perth")) |> 
+  mutate(observation = mean(observation, na.rm = TRUE)) |> 
+  ungroup() |> 
+  distinct(Date, variable, .keep_all = TRUE) |> 
+  mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "Australia/Perth")) |> 
   mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6)
   #rename(depth = Depth) |> 
   select(datetime, site_id, depth, observation, variable)
