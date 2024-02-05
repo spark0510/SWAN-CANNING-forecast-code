@@ -37,7 +37,12 @@ model_settings:
    ncore: 4
    model_name: glm
    base_GLM_nml: glm3.nml
-   modeled_depths: [0.0, 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 1.75, 2.0]
+   modeled_depths: [0.0, 0.25, 0.50, 0.75, 1.0,
+                    1.25, 1.50, 1.75, 2.0,
+                    2.25, 2.50, 2.75, 3.0,
+                    3.25, 3.50, 3.75, 4.0,
+                    4.25, 4.50, 4.75, 5.0,
+                    5.25, 5.50, 5.75, 6.0]
    par_config_file: parameter_calibration_config.csv
    obs_config_file: observations_config.csv
    states_config_file: states_config.csv
