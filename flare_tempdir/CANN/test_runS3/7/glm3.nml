@@ -12,34 +12,34 @@
    light_extc = 1, 0.5, 2, 4
    energy_frac = 0.51, 0.45, 0.035, 0.005
    Benthic_Imin = 10
-   Kw = 0.9
+   Kw = 0.87
 /
 &mixing
+   surface_mixing = 1
    coef_mix_conv = 0.125
    coef_wind_stir = 0.23
-   coef_mix_shear = 0.2
+   coef_mix_shear = 0.25
    coef_mix_turb = 0.51
-   coef_mix_KH = 0.3
-   coef_mix_shreq = 0
-   deep_mixing = .true.
+   coef_mix_KH = 0.4
    coef_mix_hyp = 0.5
+   deep_mixing = 2
+   diff = 0
 /
 &morphometry
-   lake_name = 'Swan-CanningLake'
-   latitude = -32
-   longitude = 116
-   base_elev = 5
-   crest_elev = 0.6
-   bsn_len = 504
-   bsn_wid = 333
-   bsn_vals = 10
-   H = 575, 575.5, 576, 576.5, 577, 577.5, 578, 578.5, 578.9, 579
-   A = 0.059721988, 2.526010063, 8.416914247, 27.30382676, 46503.32333, 79410.32286, 101046.2741, 105615.0383, 108733.8, 109852.4999
+   lake_name = 'CanningWeirPool'
+   latitude = 32
+   longitude = 35
+   crest_elev = 1.15
+   bsn_len = 21000
+   bsn_wid = 13000
+   bsn_vals = 31
+   H = -5.0471, -4.8571, -4.6571, -4.4571, -4.2571, -4.0571, -3.8571, -3.6571, -3.4571, -3.2571, -3.0571, -2.8571, -2.6571, -2.4571, -2.2571, -2.0571, -1.8571, -1.6571, -1.4571, -1.2571, -1.0571, -0.8571, -0.6571, -0.4571, -0.2571, -0.0571, 0.1429, 0.3429, 0.5429, 0.7429, 0.9429, 1.25
+   A = 1, 5.6, 118, 186, 265, 349, 473, 655, 835, 1148, 1730, 2452, 3415, 4732, 6618, 9975, 16179, 23885, 33456, 44971, 56124, 67434, 78383, 89853, 101813, 115037, 131578, 164284, 243165, 320511, 373011, 388000
 /
 &time
    timefmt = 2
-   start = '2010-07-01 00:0'
-   stop = '2010-07-02 00:0'
+   start = '2024-02-13 00:00'
+   stop = '2024-02-14 00:00'
    dt = 3600
    num_days = 1
 /
@@ -49,19 +49,19 @@
    nsave = 24
 /
 &init_profiles
-   num_depths = 0
-   lake_depth = 2
-   the_depths = 0.5, 1, 1.5, 2
-   the_temps = 10.2, 10.2, 10.2, 10.2
-   the_sals = 0.25, 0.25, 0.25, 0.25
+   num_depths = 38
+   lake_depth = 5.9002
+   the_depths = 0, 0.0757, 0.1574, 0.2462, 0.349, 0.4719, 0.6277, 0.8163, 1.0371, 1.1599, 1.293, 1.4385, 1.5991, 1.7847, 2.0061, 2.1429, 2.3062, 2.5306, 2.6867, 2.9253, 3.1502, 3.3097, 3.4116, 3.5324, 3.6825, 3.885, 4.0263, 4.2147, 4.3841, 4.6065, 4.7537, 4.943, 5.0945, 5.2945, 5.4887, 5.5648, 5.6126, 5.6674
+   the_temps = 23.6394, 23.7872, 23.9472, 24.14, 24.3822, 24.4638, 24.0812, 24.6304, 24.9622, 25.0636, 25.0012, 24.8665, 24.4933, 23.9419, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351, 23.6351
+   the_sals = 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605, 0.2605
    num_wq_vars = 0
    wq_names = 'OXY_oxy','OGM_doc'
    wq_init_vals = 200, 200, 200, 200, 0, 1000, 1000, 1000
    snow_thickness = 0
    white_ice_thickness = 0
    blue_ice_thickness = 0
-   avg_surf_temp = 6
-   restart_variables = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   avg_surf_temp = 23.2502
+   restart_variables = 2.97487501182802, 1.69049082769765, 0.000157420988389649, 8.3656830451078e-07, 302221982.518972, 0, 1, 455, 457.925921538904, 456, 1.9080245271404, 2.97487501182802, 0, 0, 0, 0, 0.000316227766016838
 /
 &meteorology
    met_sw = .true.
@@ -72,42 +72,42 @@
    rad_mode = 1
    cloud_mode = 4
    sw_factor = 1
-   meteo_fl = 'met_hourly_AlexSY.csv'
+   lw_factor = 1
+   meteo_fl = '/home/addelany/SWAN-CANNING-forecast-code/flare_tempdir/CANN/test_runS3/met_07.csv'
    wind_factor = 1
    ce = 0.0013
    ch = 0.0013
    cd = 0.0013
 /
 &inflow
-   coef_inf_entrain = 0
    num_inflows = 0
-   names_of_strms = 'inflow_1'
-   strm_hf_angle = 65
-   strmbd_slope = 4
-   strmbd_drag = 0.016
-   inflow_factor = 1
-   inflow_fl = 'inflow_Well_WQ_DOcorr_v2.csv'
+   names_of_strms = 'Riv1','Riv2'
+   strm_hf_angle = 65, 65
+   strmbd_slope = 2, 2
+   strmbd_drag = 0.016, 0.016
+   inflow_factor = 0.0116, 0.0116
+   coef_inf_entrain = 0
+   inflow_fl = 'canning_inf_S616027_WQ.csv','canning_inf_S616092_WQ.csv'
    inflow_varnum = 3
-   inflow_vars = 'FLOW','TEMP','SALT','OXY_oxy','SIL_rsi','NIT_amm','NIT_nit','PHS_frp','OGM_don','OGM_pon','OGM_dop','OGM_pop','OGM_doc','OGM_poc','PHY_green','PHY_diatom','PHY_bga','PHY_crypto'
+   inflow_vars = 'FLOW','TEMP','SALT'
 /
 &outflow
    num_outlet = 0
-   outlet_type = 1
    flt_off_sw = .false.
-   outl_elvs = 0.5
-   bsn_len_outl = 35000
-   bsn_wid_outl = 40000
-   outflow_fl = 'outflow_Well_v2.csv'
-   outflow_factor = 1
+   outl_elvs = -215.5
+   bsn_len_outl = 799
+   bsn_wid_outl = 399
+   outflow_fl = 'outflow.csv'
+   outflow_factor = 0.8
 /
 &sediment
    benthic_mode = 2
-   sed_heat_model = 1
-   n_zones = 1
-   zone_heights = 6.3
-   sed_heat_Ksoil = 1.2
-   sed_temp_depth = 0.5
-   sed_temp_mean = 10
-   sed_temp_amplitude = 0
-   sed_temp_peak_doy = 278.438
+   n_zones = 3
+   zone_heights = 1, 3, 6
+   sed_heat_model = 0
+   sed_temp_mean = 4.8215, 9.8526, 18.1745
+   sed_temp_amplitude = 1, 3, 10
+   sed_temp_peak_doy = 260, 260, 260
+   sed_heat_Ksoil = 0.2
+   sed_temp_depth = 0.2
 /

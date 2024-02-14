@@ -9,6 +9,7 @@ source('R/fct_awss3Connect_sensorcode.R')
 
 ## get all necessary data
 reference_datetime <- Sys.Date()  
+reference_datetime <- lubridate::as_datetime('2023-06-01 00:00:00')  
 noaa_date <- reference_datetime - lubridate::days(1)
 
 ## pull in past NOAA data
@@ -17,7 +18,7 @@ met_s3_future <- arrow::s3_bucket(paste0("drivers/noaa/gefs-v12-reprocess/stage2
                                   anonymous = TRUE)
 
 df_future <- arrow::open_dataset(met_s3_future) |> 
-  select(datetime, parameter, variable, prediction) |> 
+  #select(datetime, parameter, variable, prediction) |> 
   filter(variable %in% c("precipitation_flux","air_temperature")) |> 
   collect() |> 
   rename(ensemble = parameter) |> 
@@ -32,11 +33,10 @@ met_s3_past <- arrow::s3_bucket(paste0("drivers/noaa/gefs-v12-reprocess/stage3/p
                                 endpoint_override = "s3.flare-forecast.org",
                                 anonymous = TRUE)
 
-#week_prior <- reference_datetime - lubridate::days(7)
 years_prior <- reference_datetime - lubridate::days(1825) # 5 years
 
 df_past <- arrow::open_dataset(met_s3_past) |> 
-  select(datetime, parameter, variable, prediction) |> 
+  #select(datetime, parameter, variable, prediction) |> 
   filter(variable %in% c("precipitation_flux","air_temperature"),
          ((datetime <= min_datetime  & variable == "precipitation_flux") | 
             datetime < min_datetime  & variable == "air_temperature"),
@@ -47,23 +47,23 @@ df_past <- arrow::open_dataset(met_s3_past) |>
          variable = ifelse(variable == "air_temperature", "temperature_2m", variable),
          prediction = ifelse(variable == "temperature_2m", prediction - 273.15, prediction))
 
-
+# combine past and future noaa data
 df_combined <- bind_rows(df_future, df_past) |> 
   arrange(variable, datetime, ensemble)
 
 forecast_precip <- df_combined |> 
   filter(variable == 'precipitation') |> 
-  summarise(precip_hourly = median(prediction, na.rm = TRUE), .by = c("datetime")) |> 
+  summarise(precip_hourly = median(prediction, na.rm = TRUE), .by = c("datetime")) |> # get the median hourly precip across all EMs
   mutate(date = lubridate::as_date(datetime)) |> 
-  summarise(precip = sum(precip_hourly, na.rm = TRUE), .by = c("date")) |> 
+  summarise(precip = sum(precip_hourly, na.rm = TRUE), .by = c("date")) |> # get the total precip for each day
   mutate(sevenday_precip = RcppRoll::roll_sum(precip, n = 7, fill = NA,align = "right")) |> 
   mutate(doy = lubridate::yday(date))
 
 forecast_temp <- df_combined |> 
   filter(variable == 'temperature_2m') |> 
-  summarise(temp_hourly = median(prediction, na.rm = TRUE), .by = c("datetime")) |> 
+  summarise(temp_hourly = median(prediction, na.rm = TRUE), .by = c("datetime")) |> # get the median hourly temp across all EMs
   mutate(date = lubridate::as_date(datetime)) |> 
-  summarise(temperature = median(temp_hourly, na.rm = TRUE), .by = c("date"))
+  summarise(temperature = median(temp_hourly, na.rm = TRUE), .by = c("date")) # get median temp across hours of the day
 
 forecast_met <- forecast_precip |> 
   right_join(forecast_temp, by = c('date'))
@@ -115,11 +115,12 @@ forecast_drivers <- forecast_met |>
 # train_data <- training(split)
 # test_data <- testing(split)
 
+## set training as all data prior to start of forecast
 train_data <- forecast_drivers |> 
-  filter(date < Sys.Date())
+  filter(date < reference_datetime)
 
 ## define folds in training data 
-folds <- vfold_cv(train_data, v = 10)
+folds <- vfold_cv(train_data, v = 5) # orginally set to 10
 
 #set the recipe
 rec <- recipe(total_flow ~ precip + sevenday_precip + doy + temperature,
@@ -129,8 +130,8 @@ rec_preprocess <- rec |>
   step_normalize(all_numeric_predictors()) #|> 
   #step_dummy(doy)
 
-## define model and tunining parameters
-xgboost_mod <- boost_tree(tree_depth = tune(), trees = tune(), learn_rate = tune()) |> 
+## define model and tunining parameters (tuning 2/8 parameters right now)
+xgboost_mod <- boost_tree(tree_depth = tune(), trees = tune()) |> #, learn_rate = tune()) |> 
   set_mode("regression") |>  
   set_engine("xgboost")
 
@@ -152,16 +153,17 @@ inflow_resample_fit %>%
   collect_metrics() |> 
   arrange(mean)
 
+# select the best tuned hyper-parameters
 best_hyperparameters <- inflow_resample_fit %>%
   select_best("rmse")
 
 final_wrorkflow <- xgboost_inflow_wkflow |> 
   finalize_workflow(best_hyperparameters)
 
-## fit the model
-xgboost_inflow_fit <- fit(final_wrorkflow, data = train_data)
+## fit the model (using all available data (past and future) for now but could just use training data)
+xgboost_inflow_fit <- fit(final_wrorkflow, data = forecast_drivers)
 
-# make predictions for each enemble member 
+# make predictions for each ensemble member 
 forecast_precip_ens <- df_combined |> 
   filter(variable == 'precipitation') |> 
   #summarise(precip_hourly = sum(prediction, na.rm = TRUE), .by = c("datetime","ensemble")) |> 
@@ -180,7 +182,8 @@ forecast_temp_ens <- df_combined |>
 
 forecast_met_ens <- forecast_precip_ens |> 
   right_join(forecast_temp_ens, by = c('date',"ensemble")) |> 
-  arrange(date,ensemble)
+  arrange(date,ensemble) |> 
+  filter(date >= reference_datetime)
 
 #make empty dataframe to store predictions
 data_build <- data.frame()
@@ -193,7 +196,8 @@ for (i in unique(forecast_met_ens$ensemble)){
   ens_inflow <- predict(xgboost_inflow_fit, new_data = ens_df)
   
   ens_predictions <- cbind(ens_df,ens_inflow) |> 
-    rename(prediction = .pred)
+    rename(prediction = .pred) |> 
+    mutate(prediction = ifelse(prediction < 0, 0, prediction))
   
   
   data_build <- bind_rows(data_build,ens_predictions)
@@ -202,6 +206,19 @@ for (i in unique(forecast_met_ens$ensemble)){
 
 final_predictions <- data_build 
 
+final_predictions$reference_datetime <- reference_datetime
+final_predictions$family <- 'ensemble'
+final_predictions$variable <- 'FLOW'
+final_predictions$model_id <- 'inflow-xbgoost'
+final_predictions$flow_type <- 'inflow'
+final_predictions$flow_number <- 1
+final_predictions$parameter <- final_predictions$ensemble
+final_predictions$site_id <- 'CANN'
+final_predictions$datetime <- final_predictions$date  
+
+final_predictions <- final_predictions |> select(model_id, site_id, reference_datetime, datetime, family, parameter, variable, prediction, flow_type, flow_number)
+
+# save data and write to bucket
 write.csv(final_predictions, 'inflow_predictions.csv', row.names = FALSE)
 
 ### forecasting for day instead of each ensemble member
@@ -241,4 +258,47 @@ write.csv(final_predictions, 'inflow_predictions.csv', row.names = FALSE)
 #   geom_line(aes(y = predictions), color="steelblue") #+
 #   #xlim(c(as.Date('2021-01-01'), as.Date('2022-01-01')))
 # 
+
+
+
+
+
+# # inflow_plot
+# 
+# 
+# inflow_plot <- ggplot(final_predictions, aes(x=date, y=prediction, group = factor(ensemble))) +
+#   geom_line()
 # inflow_plot
+# 
+# 
+# ## plot reforecast
+# reforecast_df <- final_predictions |> 
+#   left_join(site_inflow_wide, by = c('date')) |> 
+#   drop_na(total_flow) |> 
+#   group_by(date) |> 
+#   mutate(avg_predicted = median(prediction)) |> 
+#   ungroup()
+# 
+# reforecast_plot <- ggplot(reforecast_df, aes(x=date, y=prediction, group = factor(ensemble))) +
+#   geom_line() +
+#   geom_line(aes(y = total_flow), color = "red") +
+#   geom_line(aes(y = avg_predicted), color = "blue")
+# 
+# reforecast_plot
+# 
+# ## plot precip
+# precip_plot <- ggplot(final_predictions, aes(x=date, y=precip, group = factor(ensemble))) +
+#   geom_line()
+# precip_plot
+# 
+# precip7 <- ggplot(final_predictions, aes(x=date, y= sevenday_precip, group = factor(ensemble))) +
+#   geom_line()
+# precip7
+
+t <- arrow::s3_bucket(paste0("scores/parquet"),
+                      endpoint_override = "s3.flare-forecast.org",
+                      anonymous = TRUE)
+
+df_future <- arrow::open_dataset(t) |> 
+  filter(site_id == 'fcre') |> 
+  collect()
