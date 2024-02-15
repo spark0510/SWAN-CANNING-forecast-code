@@ -1,20 +1,13 @@
-## code for creating inflow forecasts for swan-canning using xgboost model
+## function for creating inflow forecasts using xgboost model
 
-library(tidyverse)
-library(tidymodels)
-library(xgboost)
-
-source('R/fct_awss3Connect_sensorcode.R')
-
-
-## get all necessary data
-reference_datetime <- Sys.Date()  
-reference_datetime <- lubridate::as_datetime('2023-06-01 00:00:00')  
-noaa_date <- reference_datetime - lubridate::days(1)
+create_ml_inflows <- function(forecast_start_date, site_identifier, endpoint, s3_save_path){
 
 ## pull in past NOAA data
-met_s3_future <- arrow::s3_bucket(paste0("drivers/noaa/gefs-v12-reprocess/stage2/parquet/0/",noaa_date,"/CANN"),
-                                  endpoint_override = "s3.flare-forecast.org",
+reference_datetime <- lubridate::as_datetime(forecast_start_date)
+noaa_date <- reference_datetime - lubridate::days(1)
+  
+met_s3_future <- arrow::s3_bucket(paste0("drivers/noaa/gefs-v12-reprocess/stage2/parquet/0/",noaa_date,"/",site_identifier),
+                                  endpoint_override = endpoint,
                                   anonymous = TRUE)
 
 df_future <- arrow::open_dataset(met_s3_future) |> 
@@ -29,8 +22,8 @@ df_future <- arrow::open_dataset(met_s3_future) |>
 
 min_datetime <- min(df_future$datetime)
 
-met_s3_past <- arrow::s3_bucket(paste0("drivers/noaa/gefs-v12-reprocess/stage3/parquet/CANN"),
-                                endpoint_override = "s3.flare-forecast.org",
+met_s3_past <- arrow::s3_bucket(paste0("drivers/noaa/gefs-v12-reprocess/stage3/parquet/",site_identifier),
+                                endpoint_override = endpoint,
                                 anonymous = TRUE)
 
 years_prior <- reference_datetime - lubridate::days(1825) # 5 years
@@ -218,8 +211,17 @@ final_predictions$datetime <- final_predictions$date
 
 final_predictions <- final_predictions |> select(model_id, site_id, reference_datetime, datetime, family, parameter, variable, prediction, flow_type, flow_number)
 
-# save data and write to bucket
-write.csv(final_predictions, 'inflow_predictions.csv', row.names = FALSE)
+arrow::write_dataset(final_predictions, path = s3_save_path)
+
+} # end function
+
+
+
+# # save data and write to bucket
+# write.csv(final_predictions, 'inflow_predictions.csv', row.names = FALSE)
+# 
+
+# extra plotting code
 
 ### forecasting for day instead of each ensemble member
 # ## set up forecasted df for predictions
@@ -295,10 +297,10 @@ write.csv(final_predictions, 'inflow_predictions.csv', row.names = FALSE)
 #   geom_line()
 # precip7
 
-t <- arrow::s3_bucket(paste0("scores/parquet"),
-                      endpoint_override = "s3.flare-forecast.org",
-                      anonymous = TRUE)
-
-df_future <- arrow::open_dataset(t) |> 
-  filter(site_id == 'fcre') |> 
-  collect()
+# t <- arrow::s3_bucket(paste0("scores/parquet"),
+#                       endpoint_override = "s3.flare-forecast.org",
+#                       anonymous = TRUE)
+# 
+# df_future <- arrow::open_dataset(t) |> 
+#   filter(site_id == 'fcre') |> 
+#   collect()

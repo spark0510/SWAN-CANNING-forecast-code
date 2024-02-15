@@ -57,8 +57,8 @@ default_init:
    blue_ice_thickness: 0.0
 inflow:
    include_inflow: FALSE
-   use_forecasted_inflow: FALSE
-   forecast_inflow_model: .na
+   use_forecasted_inflow: TRUE
+   forecast_inflow_model: inflow-xbgoost
    observed_inflow_filename: .na
    inflow_variables: .na
    use_ler_vars: FALSE

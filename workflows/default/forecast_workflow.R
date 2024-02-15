@@ -1,5 +1,8 @@
 library(tidyverse)
 library(lubridate)
+library(tidymodels)
+library(xgboost)
+
 lake_directory <- here::here()
 setwd(lake_directory)
 forecast_site <- c("CANN")
@@ -12,6 +15,9 @@ config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_se
 
 # Generate the targets
 source('workflows/default/generate_targets.R')
+source('R/fct_awss3Connect_sensorcode.R')
+source('R/inflow_model.R')
+
 # Read in the targets
 # cuts <- tibble::tibble(cuts = as.integer(factor(config$model_settings$modeled_depths)),
 #                        depth = config$model_settings$modeled_depths)
@@ -41,10 +47,45 @@ if(config$run_config$use_s3){
   message("Successfully moved targets to s3 bucket")
 }
 
+
+## initialize info for inflow model
+forecast_horizon = config$run_config$forecast_horizon
+inflow_model = config$inflow$forecast_inflow_model
+lake_name_code <- config$location$site_id
+inflow_bucket <- config$s3$inflow_drivers$bucket
+inflow_endpoint <- config$s3$inflow_drivers$endpoint
+use_s3_inflow <- config$run_config$use_s3
+
 noaa_ready <- TRUE
 while(noaa_ready){
   
   config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
+  
+  
+  ## run inflow forecast
+  forecast_start_datetime = config$run_config$forecast_start_datetime
+  forecast_date <- lubridate::as_date(forecast_start_datetime)
+  forecast_hour <- lubridate::hour(forecast_start_datetime)
+  
+  if (forecast_horizon > 0) {
+    inflow_forecast_path <- file.path(inflow_model, lake_name_code, forecast_hour, forecast_date)
+  }else {
+    inflow_forecast_path <- NULL
+  }
+  
+  if(use_s3_inflow){
+    FLAREr:::arrow_env_vars()
+    inflow_s3 <- arrow::s3_bucket(bucket = file.path(inflow_bucket, inflow_forecast_path), endpoint_override = inflow_endpoint)
+    on.exit(FLAREr:::unset_arrow_vars(vars))
+  }else{
+    inflow_s3 <- arrow::SubTreeFileSystem$create(file.path(inflow_local_directory, inflow_forecast_path))
+  }
+  
+  ## run actual inflow forecast
+  create_ml_inflows(forecast_start_date = forecast_start_datetime, 
+                    site_identifier = lake_name_code, 
+                    endpoint = inflow_endpoint, 
+                    s3_save_path = inflow_s3)
   
   # Run FLARE
   output <- FLAREr::run_flare(lake_directory = lake_directory,
