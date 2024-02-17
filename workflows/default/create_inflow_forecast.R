@@ -5,7 +5,7 @@ library(tidymodels)
 library(xgboost)
 
 source('R/fct_awss3Connect_sensorcode.R')
-source('R/inflow_model.R')
+source('R/run_inflow_model.R')
 
 lake_directory <- here::here()
 
@@ -48,7 +48,7 @@ if(use_s3_inflow){
 }
 
 
-create_ml_inflows(forecast_start_date = forecast_start_datetime, 
+run_inflow_model(forecast_start_date = forecast_start_datetime, 
                   site_identifier = lake_name_code, 
                   endpoint = inflow_endpoint, 
                   s3_save_path = inflow_s3)

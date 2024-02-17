@@ -50,7 +50,7 @@ model_settings:
 default_init:
    lake_depth: 6.0  #not a modeled state
    temp: [10.20,10.20,10.20,10.20]
-   temp_depths: [1.0,3.0,4.0,6.0]
+   temp_depths: [1.5,3.0,4.5,6.0]
    salinity: 0.25
    snow_thickness: 0.0
    white_ice_thickness: 0.0

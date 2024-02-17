@@ -16,7 +16,14 @@ config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_se
 # Generate the targets
 source('workflows/default/generate_targets.R')
 source('R/fct_awss3Connect_sensorcode.R')
-source('R/inflow_model.R')
+source('R/run_inflow_model.R')
+source('R/make_em_inflows.R')
+
+## REMOVE THESE ITEMS LATER ####
+Sys.setenv(
+  AWS_ACCESS_KEY_ID = 'flare',
+  AWS_SECRET_ACCESS_KEY = 'eeZw3a65bFn')
+##################################
 
 # Read in the targets
 # cuts <- tibble::tibble(cuts = as.integer(factor(config$model_settings$modeled_depths)),
@@ -54,7 +61,7 @@ inflow_model = config$inflow$forecast_inflow_model
 lake_name_code <- config$location$site_id
 inflow_bucket <- config$s3$inflow_drivers$bucket
 inflow_endpoint <- config$s3$inflow_drivers$endpoint
-use_s3_inflow <- config$run_config$use_s3
+use_s3_inflow <- config$inflow$use_forecasted_inflow
 
 noaa_ready <- TRUE
 while(noaa_ready){
@@ -81,11 +88,21 @@ while(noaa_ready){
     inflow_s3 <- arrow::SubTreeFileSystem$create(file.path(inflow_local_directory, inflow_forecast_path))
   }
   
-  ## run actual inflow forecast
-  create_ml_inflows(forecast_start_date = forecast_start_datetime, 
+  ## run actual inflow forecast and save to s3
+  config$run_config$use_s3 <- TRUE ## REMOVE THIS LINE LATER
+  
+  run_inflow_model(forecast_start_date = forecast_start_datetime,
+                   start_date = config$run_config$start_datetime,
                     site_identifier = lake_name_code, 
                     endpoint = inflow_endpoint, 
                     s3_save_path = inflow_s3)
+  
+  if(config$run_config$forecast_horizon > 0){
+    inflow_forecast_dir = file.path(config$inflow$forecast_inflow_model, config$location$site_id, "0", lubridate::as_date(config$run_config$forecast_start_datetime))
+  }else{
+    inflow_forecast_dir <- NULL
+  }
+  
   
   # Run FLARE
   output <- FLAREr::run_flare(lake_directory = lake_directory,

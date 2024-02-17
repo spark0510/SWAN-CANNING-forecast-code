@@ -1,6 +1,6 @@
 ## function for creating inflow forecasts using xgboost model
 
-create_ml_inflows <- function(forecast_start_date, site_identifier, endpoint, s3_save_path){
+run_inflow_model <- function(forecast_start_date, start_date, site_identifier, endpoint, s3_save_path){
 
 ## pull in past NOAA data
 reference_datetime <- lubridate::as_datetime(forecast_start_date)
@@ -175,8 +175,8 @@ forecast_temp_ens <- df_combined |>
 
 forecast_met_ens <- forecast_precip_ens |> 
   right_join(forecast_temp_ens, by = c('date',"ensemble")) |> 
-  arrange(date,ensemble) |> 
-  filter(date >= reference_datetime)
+  arrange(date,ensemble) #|> 
+  #filter(date >= reference_datetime)
 
 #make empty dataframe to store predictions
 data_build <- data.frame()
@@ -209,10 +209,38 @@ final_predictions$parameter <- final_predictions$ensemble
 final_predictions$site_id <- 'CANN'
 final_predictions$datetime <- final_predictions$date  
 
-final_predictions <- final_predictions |> select(model_id, site_id, reference_datetime, datetime, family, parameter, variable, prediction, flow_type, flow_number)
+final_predictions_future <- final_predictions |> 
+  select(model_id, site_id, reference_datetime, datetime, family, parameter, variable, prediction, flow_type, flow_number) |> 
+  filter(datetime >= reference_datetime)
 
 arrow::write_dataset(final_predictions, path = s3_save_path)
 
+final_predictions_individual_inflows <- final_predictions |> 
+  select(model_id, site_id, reference_datetime, datetime, family, parameter, variable, prediction, flow_type, flow_number) |> 
+  filter(datetime >= start_date)
+
+# CREATE EM INFLOW FILE
+
+if(config$run_config$forecast_horizon > 0){
+  inflow_forecast_dir = file.path(config$inflow$forecast_inflow_model, config$location$site_id, "0", lubridate::as_date(config$run_config$forecast_start_datetime))
+}else{
+  inflow_forecast_dir <- NULL
+}
+
+make_em_inflows_arrow(inflow_forecast_dir = inflow_forecast_dir, 
+                      inflow_obs = final_predictions_individual_inflows, 
+                      out_dir = config$file_path$execute_directory, 
+                      start_datetime = config$run_config$start_datetime,
+                      end_datetime = config$run_config$end_datetime,
+                      forecast_start_datetime = config$run_config$forecast_start_datetime,
+                      forecast_horizon =  config$run_config$forecast_horizon,
+                      site_id = config$location$site_id,
+                      use_s3 = config$run_config$use_s3,
+                      bucket = config$s3$inflow_drivers$bucket,
+                      endpoint = config$s3$inflow_drivers$endpoint,
+                      local_directory = file.path(lake_directory, "drivers/inflow", inflow_forecast_dir),
+                      use_forecast = TRUE,
+                      use_ler_vars = FALSE)
 } # end function
 
 
