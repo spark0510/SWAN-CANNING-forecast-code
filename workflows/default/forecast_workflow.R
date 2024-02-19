@@ -19,12 +19,6 @@ source('R/fct_awss3Connect_sensorcode.R')
 source('R/run_inflow_model.R')
 source('R/make_em_inflows.R')
 
-## REMOVE THESE ITEMS LATER ####
-Sys.setenv(
-  AWS_ACCESS_KEY_ID = 'flare',
-  AWS_SECRET_ACCESS_KEY = 'eeZw3a65bFn')
-##################################
-
 # Read in the targets
 # cuts <- tibble::tibble(cuts = as.integer(factor(config$model_settings$modeled_depths)),
 #                        depth = config$model_settings$modeled_depths)
