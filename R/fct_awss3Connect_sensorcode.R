@@ -60,7 +60,8 @@ awss3Connect_sensorcode <- function(sensorCodes, code_df){
     tz="Australia/Perth"
   )
   
-  fetchedData <- fetchedData |> dplyr::select(datetime, variable, Height, Data)
+  fetchedData <- fetchedData #|> 
+    #dplyr::select(datetime, variable, Height, Data)
   
   return(fetchedData)
 }

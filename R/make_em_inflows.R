@@ -119,7 +119,7 @@ for(j in 1:num_inflows){
       if(nrow(obs_inflow_tmp) > 0){
         obs_inflow_tmp <- obs_inflow_tmp |>
           tidyr::pivot_wider(names_from = variable, values_from = observation) |>
-          dplyr::rename(time = datetime) |>
+          #dplyr::rename(time = datetime) |>
           dplyr::select(dplyr::all_of(variables))
       }else{
         obs_inflow_tmp <- NULL

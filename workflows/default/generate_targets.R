@@ -2,6 +2,8 @@ library(tidyverse)
 library(lubridate)
 
 source('R/fct_awss3Connect_sensorcode.R')
+source('R/fct_awss3Connect.R')
+source('R/generate_profile_targets.R')
 
 lake_directory <- here::here()
 config_set_name <- "default"
@@ -19,13 +21,29 @@ dir.create(file.path(lake_directory, "targets", config$location$site_id), showWa
 ## RUN CODE TO GENERATE DATA
 sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
 
+##  GENERATE DATA FOR LAKE SITES (TAKEN FROM PROFILE DATA)
+lake_site_data <- generate_in_lake_targets(sensor)
 
 ### GENERATE INSITU WQ TARGETS
 
-obs_download <- awss3Connect_sensorcode(sensorCodes = c('sensor_repository_81684','sensor_repository_81681', 'sensor_repository_81685'), code_df = sensorcode_df)
+## current data only grabs water temperature in-situ data from Bacon Downstream site
+obs_sensorcodes <- c('sensor_repository_81684','sensor_repository_81681', 'sensor_repository_81685', # Bacon Down
+                        'sensor_repository_81695', 'sensor_repository_81698', 'sensor_repository_81699', # Bacon Up
+                        'sensor_repository_81765', 'sensor_repository_81768', 'sensor_repository_81769', # Nicholson Down
+                        'sensor_repository_81779', 'sensor_repository_81782', 'sensor_repository_81783') # Nicholson Up
+
+obs_download <- awss3Connect_sensorcode(sensorCodes = obs_sensorcodes, code_df = sensorcode_df) |> 
+  select(-QC, -Date)
+
+depth_df <- obs_download |> 
+  filter(variable == 'Depth')
+
+
+lake_obs <- obs_download |> 
+  pivot_wider(names_from = variable, values_from = Data)
 
 # remove duplicates 
-obs_dedup <- obs_download |> distinct(datetime, Height, variable, .keep_all = TRUE)
+obs_dedup <- lake_obs |> distinct(datetime, Height, variable, .keep_all = TRUE)
 
 obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(salt = `Salinity (ppt)`, temperature = 'Temperature')
 
@@ -54,6 +72,24 @@ cleaned_insitu_file <- obs_df |>
   mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6)
   #rename(depth = Depth) |> 
   select(datetime, site_id, depth, observation, variable)
+
+
+
+## generate profile targets ## all sites included here (inflow and lake sites)
+
+#read in profile data
+rawwiski <- awss3Connect(filename = 'arms/wiski.csv')
+rawwiski$`Collect Date` <- as.Date(rawwiski$`Collect Date`,format="%d/%m/%Y")
+
+profile_sites <- c('BAC','BACD300','BACD500','BACU300','ELL','GRE','KS7','KS9','MACD50','MASD50','NIC','NIC-IN',
+                                'NICD200','PAC','PO2','KEN','KENU300') #('KEN','KENU300')  #these are all the sites in Canning River, and 'KEN' is Kent st weir. Note 'Bacon Downstream'  is not included in this dataset as it belongs to a different program. 
+lake_profile_data <- generate_profile_targets(sites = profile_sites, wiski_data = rawwiski)
+
+# lake_sites <- c('CASMID','RIV','SAL','SCB2')
+# lake_profile_data <- generate_profile_targets(sites = profile_sites, wiski_data = rawwiski)
+
+# combine targets and remove duplicates
+#combined_targets <- dplyr::bind_rows(cleaned_insitu_file, profile_data)
 
 write_csv(cleaned_insitu_file,file.path(lake_directory,"targets", 
                                         config$location$site_id,
