@@ -6,10 +6,14 @@ run_inflow_model <- function(site_id,
                              inflow_bucket = NULL,
                              inflow_endpoint = NULL,
                              inflow_local_directory = NULL, 
-                             inflow_forecast_path = NULL){
+                             forecast_horizon = NULL, 
+                             inflow_model = NULL){
 
 if(!is.null(forecast_start_datetime)){
 
+forecast_date <- lubridate::as_date(forecast_start_datetime) - lubridate::days(1)
+forecast_hour <- lubridate::hour(forecast_start_datetime)
+  
 ## pull in future NOAA data 
 
 met_s3_future <- arrow::s3_bucket(file.path("bio230121-bucket01/flare/drivers/met/gefs-v12/stage2",paste0("reference_datetime=",noaa_date),paste0("site_id=",site_id)),
@@ -101,7 +105,7 @@ inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_prediction
 
 
 if (forecast_horizon > 0) {
-  inflow_forecast_path <- file.path(inflow_model, lake_name_code, forecast_hour, forecast_date)
+  inflow_forecast_path <- file.path(inflow_model, site_id, forecast_hour, forecast_date)
 }else {
   inflow_forecast_path <- NULL
 }
@@ -114,7 +118,7 @@ if(use_s3_inflow){
   inflow_s3 <- arrow::SubTreeFileSystem$create(file.path(inflow_local_directory, inflow_forecast_path))
 }
 
-arrow::write_dataset(d, path = inflow_s3)
+arrow::write_dataset(inflow_combined, path = inflow_s3)
 
 inflow_local_files <- list.files(file.path(inflow_local_directory, inflow_forecast_path), full.names = TRUE, recursive = TRUE)
 
