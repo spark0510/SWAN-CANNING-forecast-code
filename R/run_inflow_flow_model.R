@@ -1,45 +1,9 @@
-run_inflow_flow_model <- function(met_df, met_past_df, met_combined, sites){ #met_combined = df_combined, met_df = forecast_met
+run_inflow_flow_model <- function(met_df, met_past_df, met_combined, targets_df){ #met_combined = df_combined, met_df = forecast_met
   
-  ## get inflow data
-  #sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
-  
-  ### GENERATE INSITU Inflow TARGETS
-  cann_inflow_download <- awss3Connect_sensorcode(sensorCodes = sites[1], code_df = sensorcode_df)
-  south_inflow_download <- awss3Connect_sensorcode(sensorCodes = sites[2], code_df = sensorcode_df)
-  
-  cann_inflow_download$site_id <- 'cann_river'
-  south_inflow_download$site_id <- 'south_river'
-  
-  inflow_combined <- dplyr::bind_rows(cann_inflow_download, south_inflow_download)
-  
-  inflow_combined$Date <- as.Date(inflow_combined$datetime, tz = "Australia/Perth")
-  
-  site_daily_inflow_rate_df <- inflow_combined |> 
-    group_by(Date, site_id) |> 
-    mutate(site_average_rate = mean(Data, na.rm = TRUE)) |> 
-    ungroup() |> 
-    distinct(Date, site_id, .keep_all = TRUE)
-  
-  site_daily_inflow_total <- site_daily_inflow_rate_df |> 
-    mutate(daily_total = site_average_rate*86400) # second rate (m3/s) to day rate (86400 seconds per day) 
-  
-  
-  daily_inflow_combined <- site_daily_inflow_total |> 
-    group_by(Date) |> 
-    mutate(combined_rate = ifelse((length(unique(site_id)) > 1), sum(daily_total), NA)) |> 
-    ungroup() |> 
-    drop_na(combined_rate)
-  
-  site_inflow_wide <- daily_inflow_combined |> 
-    pivot_wider(id_cols = c('Date'), names_from = 'site_id', values_from = 'daily_total') |> 
-    group_by(Date) |> 
-    mutate(total_flow = sum(cann_river + south_river)) |> 
-    ungroup() |> 
-    arrange(Date) |> 
-    select(date = Date, total_flow)
+  ## join inflow data to met
   
   forecast_drivers <- met_df |> 
-    left_join(site_inflow_wide, by = c('date')) |> 
+    left_join(targets_df, by = c('date')) |> 
     drop_na(total_flow)
   
   # split <- initial_split(forecast_drivers, prop = 0.80, strata = NULL)
@@ -140,7 +104,7 @@ run_inflow_flow_model <- function(met_df, met_past_df, met_combined, sites){ #me
   
   ## overwrite predictions with observed data when present
   update_historical_df <- data_build |> 
-    left_join(site_inflow_wide, by = c('date')) |> 
+    left_join(targets_df, by = c('date')) |> 
     mutate(prediction = ifelse(!is.na(total_flow), total_flow, prediction)) |> 
     mutate(model_id = config$inflow$forecast_inflow_model) |> 
     mutate(site_id = config$location$site_id) |> 

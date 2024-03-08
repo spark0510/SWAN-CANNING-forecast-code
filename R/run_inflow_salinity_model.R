@@ -1,22 +1,11 @@
 
-run_inflow_salinity_model <- function(met_df, met_past_df, met_combined, sites){
+run_inflow_salinity_model <- function(met_df, met_past_df, met_combined, targets_df){
 ## get inflow temperature data
 #sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
 
-temperature_inflow_df <- awss3Connect_sensorcode(sensorCodes = sites, code_df = sensorcode_df)
-
-inflow_spatial_avg_df <- temperature_inflow_df |> 
-  summarise(avg_salt_obs = mean(Data, na.rm = TRUE), .by = c("datetime")) |> 
-  arrange(datetime)
-
-inflow_spatial_avg_df$date <- as.Date(inflow_spatial_avg_df$datetime, tz = "Australia/Perth")
-
-inflow_daily_average_df <- inflow_spatial_avg_df |> 
-  summarise(salinity = mean(avg_salt_obs, na.rm = TRUE), .by = c("date"))
-
 ## combine data with met drivers
 forecast_drivers <- met_df |> 
-  left_join(inflow_daily_average_df, by = c('date')) |> 
+  left_join(targets_df, by = c('date')) |> 
   drop_na(salinity)
 
 
@@ -104,7 +93,7 @@ for (i in unique(create_historical_df$ensemble)){
 
 ## overwrite predictions with observed data when present
 update_historical_df <- data_build |> 
-  left_join(inflow_daily_average_df, by = c('date')) |> 
+  left_join(targets_df, by = c('date')) |> 
   mutate(prediction = ifelse(!is.na(salinity), salinity, prediction)) |> 
   mutate(model_id = config$inflow$forecast_inflow_model) |> 
   mutate(site_id = config$location$site_id) |> 

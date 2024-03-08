@@ -31,8 +31,8 @@ profile_data <- profile_data_download %>%
          time = `Collect Time`, 
          date = `Collect Date`, 
          depth = `Sample Depth (m)`, 
-         salinity_ppt = `Salinity (ppt)`, 
-         temperature_degC = `Temperature (deg C)`) |> 
+         salt = `Salinity (ppt)`, 
+         temperature = `Temperature (deg C)`) |> 
   mutate(time = format(strptime(time, "%I:%M:%S %p"), "%H:%M:%S")) |> # convert from AM/PM to 24-hour 
   mutate(datetime = paste(date, time))
 
@@ -42,7 +42,7 @@ profile_data_grouped <- profile_data |>
   rename(depth = depth_rounded) |> 
   filter(!is.na(depth), 
          depth <= 6.0) |> 
-  pivot_longer(cols = c("salinity_ppt", "temperature_degC"), names_to = 'variable', values_to = 'data') |> 
+  pivot_longer(cols = c("salt", "temperature"), names_to = 'variable', values_to = 'data') |> 
   summarise(observation = mean(data, na.rm = TRUE), .by = c("datetime","variable","depth")) |> 
   mutate(datetime = lubridate::force_tz(lubridate::as_datetime(datetime, format = '%d/%m/%Y %H:%M:%S')), tzone = 'Australia/Perth') |>
   mutate(datetime = lubridate::with_tz(datetime, tzone = "UTC")) |> 
@@ -56,6 +56,7 @@ profile_data_grouped <- profile_data |>
   group_by(date, variable) |> 
   filter(datetime == min_datetime) |> 
   ungroup() |> 
+  filter(!is.nan(observation)) |> 
   select(datetime = date, site_id, depth, observation, variable)
 
 return(profile_data_grouped)

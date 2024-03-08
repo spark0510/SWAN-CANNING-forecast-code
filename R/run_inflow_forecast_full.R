@@ -16,24 +16,16 @@ forecast_site <- c("CANN")
 configure_run_file <- "configure_run.yml"
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
+config_obs <- FLAREr::initialize_obs_processing(lake_directory, 
+                                                observation_yml = "observation_processing.yml", 
+                                                config_set_name = config_set_name)
+
 FLAREr::get_targets(lake_directory, config)
 
 
 message("Forecasting inflow and outflows")
 
 sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
-
-## define define flow sensorcodes
-print('Running Flow Inflow Forecast')
-cann_flow_codes <- 'sensor_repository_00804'
-south_flow_codes <- 'sensor_repository_00752'
-
-## define temperature sensorcodes
-temp_codes <- c("sensor_repository_81684", "sensor_repository_81698", "sensor_repository_81768", "sensor_repository_81782")
-
-## define salt sensorcodes
-salt_codes <- c('sensor_repository_81685', 'sensor_repository_81699', 'sensor_repository_81769', 'sensor_repository_81783')
-
 
 reference_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime)
 noaa_date <- reference_datetime - lubridate::days(1)

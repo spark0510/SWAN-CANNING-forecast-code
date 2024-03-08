@@ -78,34 +78,52 @@ forecast_met <- forecast_precip |>
 ## RUN PREDICTIONS
 sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
 
+inflow_targets <- read_csv(file.path(config_obs$file_path$targets_directory, config_obs$site_id, paste0(config_obs$site_id,"-targets-inflow.csv")))
+
 ## RUN FLOW PREDICTIONS
 print('Running Flow Inflow Forecast')
-flow_codes <- c(cann_flow_codes, south_flow_codes)
+
+flow_targets <- inflow_targets |>
+  filter(variable == 'FLOW') |> 
+  rename(date = datetime, total_flow = observation)
+
 flow_predictions <- run_inflow_flow_model(met_df = forecast_met, 
                                           met_past_df = df_past, 
                                           met_combined = df_combined, 
-                                          sites = flow_codes)
+                                          targets_df = flow_targets)
 
 ## RUN TEMPERATURE PREDICTIONS
 print('Running Temperature Inflow Forecast')
+temp_targets <- inflow_targets |>
+  filter(variable == 'TEMP') |> 
+  rename(date = datetime, water_temperature = observation)
+
 temp_predictions <- run_inflow_temperature_model(met_df = forecast_met, 
                                                  met_past_df = df_past, 
                                                  met_combined = df_combined, 
-                                                 sites = temp_codes)
+                                                 targets_df = temp_targets)
 
 ## RUN SALINITY PREDICTIONS
 print('Running Salinity Inflow Forecast')
+salt_targets <- inflow_targets |>
+  filter(variable == 'SALT') |> 
+  rename(date = datetime, salinity = observation)
+
 salt_predictions <- run_inflow_salinity_model(met_df = forecast_met, 
                                               met_past_df = df_past, 
                                               met_combined = df_combined, 
-                                              sites = salt_codes)
+                                              targets_df = salt_targets)
 
 
 inflow_combined <- bind_rows(flow_predictions, temp_predictions, salt_predictions)
 
+outflow_df <- inflow_combined
+outflow_df$flow_type <- 'outflow'
+
+flow_combined <- bind_rows(inflow_combined, outflow_df)
 
 if (forecast_horizon > 0) {
-  inflow_forecast_path <- file.path(inflow_model, site_id, forecast_hour, forecast_date)
+  inflow_forecast_path <- file.path(inflow_model, site_id, forecast_hour, lubridate::as_date(forecast_start_datetime))
 }else {
   inflow_forecast_path <- NULL
 }
@@ -118,7 +136,7 @@ if(use_s3_inflow){
   inflow_s3 <- arrow::SubTreeFileSystem$create(file.path(inflow_local_directory, inflow_forecast_path))
 }
 
-arrow::write_dataset(inflow_combined, path = inflow_s3)
+arrow::write_dataset(flow_combined, path = inflow_s3)
 
 inflow_local_files <- list.files(file.path(inflow_local_directory, inflow_forecast_path), full.names = TRUE, recursive = TRUE)
 
@@ -129,5 +147,5 @@ print("Inflow files processed...")
   inflow_local_files <- NULL
   
 }# end if statement 
-  return(inflow_combined)
+  return(flow_combined)
 }

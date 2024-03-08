@@ -4,8 +4,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   
   # remove duplicates 
   obs_dedup <- obs_download |> 
-    distinct(datetime, Height, variable, .keep_all = TRUE) |> 
-    select(-QC, -Date)
+    distinct(datetime, Height, variable, .keep_all = TRUE)
   
   obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(salt = `Salinity (ppt)`, temperature = 'Temperature')
   
@@ -23,7 +22,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     mutate(observation = mean(observation, na.rm = TRUE)) |> 
     ungroup() |> 
     distinct(Date, variable, .keep_all = TRUE) |> 
-    mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "Australia/Perth")) |> 
+    mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "UTC")) |> 
     mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6)
     select(datetime, site_id, depth, observation, variable)
   

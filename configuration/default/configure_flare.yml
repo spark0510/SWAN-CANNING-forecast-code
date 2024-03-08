@@ -56,12 +56,13 @@ default_init:
    white_ice_thickness: 0.0
    blue_ice_thickness: 0.0
 inflow:
-   include_inflow: FALSE
    use_forecasted_inflow: TRUE
    forecast_inflow_model: inflow-xbgoost
-   observed_inflow_filename: .na
-   inflow_variables: .na
+   include_inflow: FALSE
+   observed_filename: CANN-targets-inflow.csv
+   inflow_variables: NA
    use_ler_vars: FALSE
+   local_directory: drivers/inflow 
 met:
    use_forecasted_met: TRUE
    use_observed_met: FALSE
