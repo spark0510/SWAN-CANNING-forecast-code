@@ -18,10 +18,10 @@ config_set_name <- "default"
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
 # Generate the targets
-source('workflows/default/generate_targets.R')
-source('R/fct_awss3Connect_sensorcode.R')
-source('R/run_inflow_model.R')
-source('R/make_em_inflows.R')
+# source('workflows/default/generate_targets.R')
+# source('R/fct_awss3Connect_sensorcode.R')
+# source('R/run_inflow_model.R')
+# #source('R/make_em_inflows.R')
 
 # Read in the targets
 source('workflows/default/generate_targets.R')

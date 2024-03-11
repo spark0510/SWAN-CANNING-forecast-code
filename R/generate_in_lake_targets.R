@@ -1,7 +1,7 @@
-source('R/fct_awss3Connect_sensorcode.R')
-source('R/fct_awss3Connect.R')
-source('R/collect_insitu_targets.R')
-source('R/collect_profile_targets.R')
+# source('R/fct_awss3Connect_sensorcode.R')
+# source('R/fct_awss3Connect.R')
+# source('R/collect_insitu_targets.R')
+# source('R/collect_profile_targets.R')
 
 
 # COLLECT INSITU SENSOR DATA
