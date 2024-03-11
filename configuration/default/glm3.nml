@@ -2,12 +2,12 @@
 &glm_setup
    sim_name        = 'CANN'
    max_layers      =  500
-   !min_layer_vol   =   0.025
-   !min_layer_thick =   0.1
+   !min_layer_vol   =   1
+   !min_layer_thick =   0.01
    !max_layer_thick =   0.25
-   min_layer_vol = 5
-   min_layer_thick = 0.2
-   max_layer_thick = 2
+   min_layer_vol = 1
+   min_layer_thick = 2
+   max_layer_thick = 5
    non_avg         = .true.
 /
 
@@ -121,23 +121,18 @@
 
 !-------------------------------------------------------------------------------
 &inflow
-   num_inflows  = 1
-   !names_of_strms = 'Riv1','Riv2'
-   !strm_hf_angle  = 65.0,   65.0
-   !strmbd_slope   = 2.0,    2.0
-   !strmbd_drag    = 0.0160, 0.0160
-   !inflow_factor  = 0.0116,    0.0116
+   num_inflows = 1
    names_of_strms = 'Riv1'
-   strm_hf_angle  = 65.0
-   strmbd_slope   = 2.0
-   strmbd_drag    = 0.0160
-   inflow_factor  = 0.5
-   coef_inf_entrain = 0.
-   inflow_fl      = 'canning_inf_S616027_WQ.csv', 'canning_inf_S616092_WQ.csv'
-   inflow_varnum  = 3
-   inflow_vars    =   'FLOW',
-                      'TEMP',
-                      'SALT',
+   subm_flag = .true.
+   strm_hf_angle = 55
+   strmbd_slope = 0.05
+   strmbd_drag = 0.016
+   subm_elev = 6.0
+   inflow_factor = 1
+   coef_inf_entrain = 0
+   inflow_fl = 'canning_inf_S616027_WQ.csv', 'canning_inf_S616092_WQ.csv'
+   inflow_varnum = 3
+   inflow_vars = 'FLOW','TEMP','SALT'
 /
 
 !-------------------------------------------------------------------------------
