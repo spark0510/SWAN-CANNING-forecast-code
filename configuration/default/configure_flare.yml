@@ -58,7 +58,7 @@ default_init:
 inflow:
    use_forecasted_inflow: TRUE
    forecast_inflow_model: inflow-xbgoost
-   include_inflow: FALSE
+   include_inflow: TRUE
    observed_filename: CANN-targets-inflow.csv
    inflow_variables: NA
    use_ler_vars: FALSE

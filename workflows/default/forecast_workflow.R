@@ -2,6 +2,7 @@ library(tidyverse)
 library(lubridate)
 library(tidymodels)
 library(xgboost)
+#install.packages('RcppRoll')
 
 Sys.setenv("AWS_DEFAULT_REGION" = "renc",
            "AWS_S3_ENDPOINT" = "osn.xsede.org",
