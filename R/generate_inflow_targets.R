@@ -65,8 +65,11 @@ daily_inflow_rate_df <- inflow_combined |>
   ungroup() |> 
   distinct(Date, flow_source, .keep_all = TRUE)
 
+# daily_inflow_total <- daily_inflow_rate_df |> 
+#   mutate(daily_total = average_rate*86400) # second rate (m3/s) to day rate (86400 seconds per day) --> (m3/day)
+
 daily_inflow_total <- daily_inflow_rate_df |> 
-  mutate(daily_total = average_rate*86400) # second rate (m3/s) to day rate (86400 seconds per day) --> (m3/day)
+  mutate(daily_total = ifelse(average_rate > 1, average_rate*0.1, average_rate)) # second rate (m3/s) to day rate (86400 seconds per day) --> (m3/day)
 
 daily_inflow_combined <- daily_inflow_total |> 
   group_by(Date) |> 

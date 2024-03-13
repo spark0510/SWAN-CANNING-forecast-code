@@ -6,8 +6,8 @@
    !min_layer_thick =   0.01
    !max_layer_thick =   0.25
    min_layer_vol = 0.25
-   min_layer_thick = 0.20
-   max_layer_thick = 6
+   min_layer_thick = 0.01
+   max_layer_thick = 0.25
    non_avg         = .true.
 /
 
