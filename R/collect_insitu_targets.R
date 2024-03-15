@@ -26,5 +26,36 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6)
     select(datetime, site_id, depth, observation, variable)
   
+  
+  roll_temp <- cleaned_insitu_file |> 
+    filter(variable == 'temperature') |> 
+    arrange(datetime) |> 
+    mutate(mean_roll = RcppRoll::roll_mean(x = observation, n = 7, fill = NA, na.rm = TRUE)) |> 
+    mutate(sd_roll = RcppRoll::roll_sd(x = mean_roll, n = 7, fill = NA, na.rm = TRUE)) |> 
+    mutate(mean_roll = zoo::na.fill(mean_roll, "extend")) |> 
+    mutate(sd_roll = zoo::na.fill(sd_roll, "extend")) |>
+    mutate(obs_test = observation < (mean_roll - (sd_roll*2))) |> 
+    mutate(obs_num = mean_roll - (sd_roll*3)) |> 
+    filter(!(sd_roll > 1 & (observation < (mean_roll - (sd_roll*3)))), 
+           !(sd_roll > 1 & (observation < (mean_roll + (sd_roll*3)))))
+  
+  # roll_salt <- cleaned_insitu_file |> 
+  #   filter(variable == 'salt') |> 
+  #   arrange(datetime) |> 
+  #   mutate(mean_roll = RcppRoll::roll_mean(x = observation, n = 7, fill = NA, na.rm = TRUE)) |> 
+  #   mutate(sd_roll = RcppRoll::roll_sd(x = mean_roll, n = 7, fill = NA, na.rm = TRUE)) |> 
+  #   mutate(mean_roll = zoo::na.fill(mean_roll, "extend")) |> 
+  #   mutate(sd_roll = zoo::na.fill(sd_roll, "extend")) |>
+  #   mutate(obs_test = observation < (mean_roll - (sd_roll*2))) |> 
+  #   mutate(obs_num = mean_roll - (sd_roll*3)) |> 
+  #   filter(!((observation < (mean_roll - (sd_roll*3)))), 
+  #          !((observation < (mean_roll + (sd_roll*3)))))
+  
+  
+  roll_salt <- cleaned_insitu_file |>
+    filter(variable == 'salt') |>
+    arrange(datetime) |> 
+    filter(!(observation == 0))
+  
   return(cleaned_insitu_file)
 }
