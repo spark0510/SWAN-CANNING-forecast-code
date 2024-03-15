@@ -29,6 +29,7 @@ da_setup:
     da_method: enkf
     par_fit_method: perturb_const
     ensemble_size:  256
+    localization_distance: 2 #distance in meters were covariances in the model error are used
     no_negative_states: TRUE
     assimilate_first_step: FALSE
     use_obs_constraint: TRUE
@@ -70,12 +71,6 @@ met:
    observed_met_filename: CANN-targets-met.csv
    use_ler_vars: FALSE
    forecast_lag_days: 1
-   #observed_met_filename: CANN-targets-met.csv
-   #use_forecasted_met: TRUE
-   #use_observed_met: FALSE
-   #local_directory: drivers/noaa/gefs-v12/stage2/parquet
-   #observed_met_filename: CANN-targets-insitu.csv
-   #use_ler_vars: FALSE
 uncertainty:
    observation: TRUE
    process: TRUE
