@@ -28,6 +28,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SC_AWS_KEY: ${{ secrets.SC_AWS_KEY }}
           SC_AWS_SECRET: ${{ secrets.SC_AWS_SECRET }}
-        run:  | 
-        
-        Rscript $GITHUB_WORKSPACE/workflows/default/combined_workflow.R
+        run:  Rscript $GITHUB_WORKSPACE/workflows/default/combined_workflow.R

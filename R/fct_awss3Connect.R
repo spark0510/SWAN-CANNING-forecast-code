@@ -6,21 +6,6 @@
 #' @import aws.s3 readr
 #' @noRd
 
-
-library('aws.s3')
-
-# To enforce HTTPS, should be set to TRUE
-Sys.setenv('USE_HTTPS' = TRUE)
-
-# Set details for bucket origin
-Sys.setenv(
-  'AWS_DEFAULT_REGION' = '', 
-  'AWS_S3_ENDPOINT' = 'projects.pawsey.org.au', 
-  'SC_AWS_ACCESS_KEY_ID' = Sys.getenv('SC_AWS_KEY'), 
-  'SC_AWS_SECRET_ACCESS_KEY' = Sys.getenv('SC_AWS_SECRET')
-)
-
-
 awss3Connect <- function(filename){
   
   # Now set bucket contents as objects
@@ -51,10 +36,10 @@ awss3Connect <- function(filename){
                                       bucket = bucket,
                                       filename = basename(filename),
                                       opts = list(
-                                        base_url = "projects.pawsey.org.au",
+                                        base_url = Sys.getenv('SC_S3_ENDPOINT'),
                                         region = "",
-                                        key = SC_AWS_ACCESS_KEY_ID,
-                                        secret = SC_AWS_SECRET_ACCESS_KEY))
+                                        key = Sys.getenv('SC_AWS_KEY'),
+                                        secret = Sys.getenv('SC_AWS_SECRET')))
 
  
   return(fetchedData)
