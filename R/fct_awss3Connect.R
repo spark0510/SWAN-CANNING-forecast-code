@@ -16,8 +16,8 @@ Sys.setenv('USE_HTTPS' = TRUE)
 Sys.setenv(
   'AWS_DEFAULT_REGION' = '', 
   'AWS_S3_ENDPOINT' = 'projects.pawsey.org.au', 
-  'AWS_ACCESS_KEY_ID' = Sys.getenv('SC_AWS_KEY'), 
-  'AWS_SECRET_ACCESS_KEY' = Sys.getenv('SC_AWS_SECRET')
+  'SC_AWS_ACCESS_KEY_ID' = Sys.getenv('SC_AWS_KEY'), 
+  'SC_AWS_SECRET_ACCESS_KEY' = Sys.getenv('SC_AWS_SECRET')
 )
 
 
@@ -53,8 +53,8 @@ awss3Connect <- function(filename){
                                       opts = list(
                                         base_url = "projects.pawsey.org.au",
                                         region = "",
-                                        key = "2f1a9d81bdf24a178b2bd18d530e959b",
-                                        secret = "e062073c1faf488cb4209ba8de2eb483"))
+                                        key = SC_AWS_ACCESS_KEY_ID,
+                                        secret = SC_AWS_SECRET_ACCESS_KEY))
 
  
   return(fetchedData)

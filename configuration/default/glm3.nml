@@ -2,9 +2,6 @@
 &glm_setup
    sim_name        = 'CANN'
    max_layers      =  500
-   !min_layer_vol   =   1
-   !min_layer_thick =   0.01
-   !max_layer_thick =   0.25
    min_layer_vol = 1.0
    min_layer_thick = 0.5
    max_layer_thick = 7
