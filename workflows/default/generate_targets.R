@@ -18,7 +18,7 @@ config_obs <- FLAREr::initialize_obs_processing(lake_directory,
 
 dir.create(file.path(lake_directory, "targets", config$location$site_id), showWarnings = FALSE)
 
-sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
+sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
 
 
 ## RUN CODE TO GENERATE DATA

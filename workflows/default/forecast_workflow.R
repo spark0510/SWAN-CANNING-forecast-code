@@ -2,6 +2,7 @@ library(tidyverse)
 library(lubridate)
 library(tidymodels)
 library(xgboost)
+library(RcppRoll)
 #install.packages('RcppRoll')
 
 Sys.setenv("AWS_DEFAULT_REGION" = "renc",
@@ -37,14 +38,9 @@ FLAREr::put_targets(site_id =  config$location$site_id,
                     use_s3 = config$run_config$use_s3,
                     config = config)
 
-if(config$run_config$use_s3){
-  message("Successfully moved targets to s3 bucket")
-}
-
-
 ## initialize info for inflow model
-forecast_horizon = config$run_config$forecast_horizon
-inflow_model = config$inflow$forecast_inflow_model
+forecast_horizon <- config$run_config$forecast_horizon
+inflow_model <- config$inflow$forecast_inflow_model
 lake_name_code <- config$location$site_id
 inflow_bucket <- config$s3$inflow_drivers$bucket
 inflow_endpoint <- config$s3$inflow_drivers$endpoint
@@ -54,7 +50,6 @@ noaa_ready <- TRUE
 while(noaa_ready){
   
   config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
-  
   
   # ## run inflow forecast
   source('R/run_inflow_forecast_full.R')

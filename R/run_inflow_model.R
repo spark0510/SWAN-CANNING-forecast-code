@@ -76,9 +76,9 @@ forecast_met <- forecast_precip |>
 
 
 ## RUN PREDICTIONS
-sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
+sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
 
-inflow_targets <- read_csv(file.path(config_obs$file_path$targets_directory, config_obs$site_id, paste0(config_obs$site_id,"-targets-inflow.csv")))
+inflow_targets <- read_csv(file.path(config_obs$file_path$targets_directory, config_obs$site_id, paste0(config_obs$site_id,"-targets-inflow.csv")), show_col_types = FALSE)
 
 ## RUN FLOW PREDICTIONS
 print('Running Flow Inflow Forecast')
@@ -121,6 +121,8 @@ outflow_df <- inflow_combined
 outflow_df$flow_type <- 'outflow'
 
 flow_combined <- bind_rows(inflow_combined, outflow_df)
+
+#flow_combined <- inflow_combined
 
 if (forecast_horizon > 0) {
   inflow_forecast_path <- file.path(inflow_model, site_id, forecast_hour, lubridate::as_date(forecast_start_datetime))

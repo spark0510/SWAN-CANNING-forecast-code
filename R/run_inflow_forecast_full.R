@@ -25,7 +25,7 @@ FLAREr::get_targets(lake_directory, config)
 
 message("Forecasting inflow and outflows")
 
-sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
+sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
 
 reference_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime)
 noaa_date <- reference_datetime - lubridate::days(1)
