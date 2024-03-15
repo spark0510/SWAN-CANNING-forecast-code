@@ -7,7 +7,8 @@ library(RcppRoll)
 
 Sys.setenv("AWS_DEFAULT_REGION" = "renc",
            "AWS_S3_ENDPOINT" = "osn.xsede.org",
-           "USE_HTTPS" = TRUE)
+           "USE_HTTPS" = TRUE,
+           "SC_S3_ENDPOINT" = "projects.pawsey.org.au")
 
 
 lake_directory <- here::here()
