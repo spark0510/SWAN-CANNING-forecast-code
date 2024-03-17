@@ -3,17 +3,18 @@ library(lubridate)
 library(tidymodels)
 library(xgboost)
 library(RcppRoll)
-#install.packages('RcppRoll')
+
+fresh_run <- FALSE
 
 Sys.setenv("AWS_DEFAULT_REGION" = "renc",
            "AWS_S3_ENDPOINT" = "osn.xsede.org",
            "USE_HTTPS" = TRUE,
            "SC_S3_ENDPOINT" = "projects.pawsey.org.au")
 
-
 lake_directory <- here::here()
 setwd(lake_directory)
 forecast_site <- c("CANN")
+site_id <- "CANN"
 
 #configure_run_file <- paste0("configure_run_",forecast_site,".yml")
 configure_run_file <- "configure_run.yml"
@@ -21,11 +22,7 @@ config_set_name <- "default"
 
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
-# Generate the targets
-# source('workflows/default/generate_targets.R')
-# source('R/fct_awss3Connect_sensorcode.R')
-# source('R/run_inflow_model.R')
-# #source('R/make_em_inflows.R')
+if(fresh_run) unlink(file.path(lake_directory, "restart", "CANN", config$run_config$sim_name, configure_run_file))
 
 # Read in the targets
 source('workflows/default/generate_targets.R')
@@ -34,9 +31,9 @@ source('workflows/default/generate_targets.R')
 message("Successfully generated targets")
 
 FLAREr::put_targets(site_id =  config$location$site_id,
-                    cleaned_insitu_file = cleaned_insitu_file,
-                    cleaned_met_file = NA,
-                    cleaned_inflow_file = NA,
+                    cleaned_insitu_file = file.path(config$file_path$qaqc_data_directory, "CANN-targets-insitu.csv"),
+                    cleaned_met_file = file.path(config$file_path$qaqc_data_directory,"CANN-targets-met.csv"),
+                    cleaned_inflow_file = file.path(config$file_path$qaqc_data_directory,"CANN-targets-inflow.csv"),
                     use_s3 = config$run_config$use_s3,
                     config = config)
 
