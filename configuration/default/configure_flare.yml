@@ -4,7 +4,7 @@ s3:
     bucket: bio230121-bucket01/flare/drivers/met/gefs-v12
   inflow_drivers:
     endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/drivers/inflow/CANN/inflow-xbgoost
+    bucket: bio230121-bucket01/flare/drivers/inflow/CANN
   targets:
     endpoint: renc.osn.xsede.org
     bucket: bio230121-bucket01/flare/targets
