@@ -1,7 +1,7 @@
-# source('R/fct_awss3Connect_sensorcode.R')
-# source('R/fct_awss3Connect.R')
-# source('R/collect_insitu_targets.R')
-# source('R/collect_profile_targets.R')
+source('R/fct_awss3Connect_sensorcode.R')
+source('R/fct_awss3Connect.R')
+source('R/collect_insitu_targets.R')
+source('R/collect_profile_targets.R')
 
 
 # COLLECT INSITU SENSOR DATA
@@ -27,8 +27,8 @@ lake_profile_sites <- c('BAC','BACD300','BACD500','BACU300','CASMID','ELL','GRE'
 lake_profile_df <- collect_profile_targets(profile_data_download = profile_obs_df, 
                                            sites = lake_profile_sites)
 
-
-data_combined <- bind_rows(lake_insitu_df, lake_profile_df)
+data_combined <- bind_rows(lake_insitu_df, lake_profile_df) |> 
+  distinct(datetime,depth,variable, .keep_all = TRUE)
 
 write_csv(data_combined, 
           file.path(config_obs$file_path$targets_directory, config_obs$site_id, paste0(config_obs$site_id,"-targets-insitu.csv")))

@@ -1,4 +1,3 @@
-## function to collect and clean insitu data
 
 collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   
@@ -28,14 +27,15 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   
   
   roll_temp <- cleaned_insitu_file |> 
-    filter(variable == 'temperature') |> 
+    filter(variable == 'temperature', 
+           observation != 0) |> 
     arrange(datetime) |> 
     mutate(mean_roll = RcppRoll::roll_mean(x = observation, n = 7, fill = NA, na.rm = TRUE)) |> 
     mutate(sd_roll = RcppRoll::roll_sd(x = mean_roll, n = 7, fill = NA, na.rm = TRUE)) |> 
     mutate(mean_roll = zoo::na.fill(mean_roll, "extend")) |> 
     mutate(sd_roll = zoo::na.fill(sd_roll, "extend")) |>
-    mutate(obs_test = observation < (mean_roll - (sd_roll*2))) |> 
-    mutate(obs_num = mean_roll - (sd_roll*3)) |> 
+    #mutate(obs_test = observation < (mean_roll - (sd_roll*2))) |> 
+    #mutate(obs_num = mean_roll - (sd_roll*3)) |> 
     filter(!(sd_roll > 1 & (observation < (mean_roll - (sd_roll*3)))), 
            !(sd_roll > 1 & (observation < (mean_roll + (sd_roll*3)))))
   
@@ -57,5 +57,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     arrange(datetime) |> 
     filter(!(observation == 0))
   
-  return(cleaned_insitu_file)
+  updated_data <- bind_rows(roll_temp, row_salt)
+  
+  return(updated_data)
 }
