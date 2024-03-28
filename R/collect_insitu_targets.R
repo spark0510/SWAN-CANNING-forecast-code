@@ -3,8 +3,11 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   
   print(names(obs_download))
   # remove duplicates 
+  #obs_dedup <- obs_download |> 
+    #distinct(Height, variable, datetime, .keep_all = TRUE)
+  
   obs_dedup <- obs_download |> 
-    distinct(Height, variable, datetime, .keep_all = TRUE)
+    distinct(Height, variable, .keep_all = TRUE)
   
   print('obs_dedup')
   print(names(obs_dedup))
