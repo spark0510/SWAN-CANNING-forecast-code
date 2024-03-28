@@ -6,6 +6,9 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   obs_dedup <- obs_download |> 
     distinct(datetime, Height, variable, .keep_all = TRUE)
   
+  print('obs_dedup')
+  print(names(obs_dedup))
+  
   obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(salt = `Salinity (ppt)`, temperature = 'Temperature')
   
   obs_df <- obs_df_wide |> pivot_longer(cols = c('temperature','salt'),
@@ -14,6 +17,10 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   
   ## assign columns
   obs_df$site_id <- site_location
+  
+  print('obs_df')
+  print(names(obs_df))
+  
   
   cleaned_insitu_file <- obs_df |> 
     mutate(Date = as.Date(datetime)) |> 
@@ -26,6 +33,8 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6)
     select(datetime, site_id, depth, observation, variable)
   
+  print('cleaned_insitu_file')
+  print(names(cleaned_insitu_file))
   
   roll_temp <- cleaned_insitu_file |> 
     filter(variable == 'temperature', 
@@ -39,6 +48,9 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     #mutate(obs_num = mean_roll - (sd_roll*3)) |> 
     filter(!(sd_roll > 1 & (observation < (mean_roll - (sd_roll*3)))), 
            !(sd_roll > 1 & (observation < (mean_roll + (sd_roll*3)))))
+  
+  print('roll_temp')
+  print(names(roll_temp))
   
   # roll_salt <- cleaned_insitu_file |> 
   #   filter(variable == 'salt') |> 
