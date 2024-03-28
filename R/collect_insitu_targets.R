@@ -57,7 +57,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     arrange(datetime) |> 
     filter(!(observation == 0))
   
-  updated_data <- bind_rows(roll_temp, row_salt)
+  updated_data <- bind_rows(roll_temp, roll_salt)
   
   return(updated_data)
 }
