@@ -14,6 +14,8 @@ all_site_codes <- c('sensor_repository_81684', 'sensor_repository_81685', # Baco
 insitu_obs_df <- awss3Connect_sensorcode(sensorCodes = all_site_codes, code_df = sensorcode_df, server_name = server_name_sc) |> 
   select(-QC, -Date)
 
+print(nrow(insitu_obs_df))
+
 lake_insitu_df <- collect_insitu_targets(obs_download = insitu_obs_df, 
                                         site_location = 'CANN', 
                                         assign_depth = 1.5)
