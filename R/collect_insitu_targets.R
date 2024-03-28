@@ -3,8 +3,11 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   
   print(names(obs_download))
   # remove duplicates 
+  #obs_dedup <- obs_download |> 
+    #distinct(Height, variable, datetime, .keep_all = TRUE)
+  
   obs_dedup <- obs_download |> 
-    distinct(Height, variable, datetime, .keep_all = TRUE)
+    distinct(Height, variable, .keep_all = TRUE)
   
   obs_df_wide <- obs_dedup |> pivot_wider(names_from = variable, values_from = Data) |> rename(salt = `Salinity (ppt)`, temperature = 'Temperature')
   
