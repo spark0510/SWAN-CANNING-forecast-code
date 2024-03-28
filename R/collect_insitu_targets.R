@@ -2,12 +2,10 @@
 collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   
   print(names(obs_download))
-  # remove duplicates 
-  #obs_dedup <- obs_download |> 
-    #distinct(Height, variable, datetime, .keep_all = TRUE)
   
-  obs_dedup <- obs_download |> 
-    distinct(Height, variable, .keep_all = TRUE)
+  # remove duplicates 
+  obs_dedup <- obs_download |>
+  distinct(Height, variable, datetime, .keep_all = TRUE)
   
   print('obs_dedup')
   print(names(obs_dedup))
@@ -25,9 +23,15 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   print(names(obs_df))
   
   
-  cleaned_insitu_file <- obs_df |> 
+  group_insitu <- obs_df |> 
     mutate(Date = as.Date(datetime)) |> 
-    filter(lubridate::hour(datetime) == 0) |> # only want midnight observations for the daily value
+    mutate(hour == lubridate::hour(datetime)) |> 
+    filter(hour == 0) 
+  
+  print('group_insitu')
+  print(names(group_insitu))
+  
+  cleaned_insitu_file <- group_insitu |> # only want midnight observations for the daily value
     group_by(Date, variable) |> 
     mutate(observation = mean(observation, na.rm = TRUE)) |> 
     ungroup() |> 
