@@ -23,7 +23,7 @@ jobs:
           SC_AWS_SECRET: ${{ secrets.SC_AWS_SECRET }}
           
         run:  | 
-          #R -e 'remotes::install_version("RcppRoll", version = "0.3.0")'
+          R -e 'remotes::install_version("RcppRoll", version = "0.3.0")'
           #R -e 'remotes::install_version("xgboost", version = "1.7.7.1")'
           #R -e 'remotes::install_version("tidymodels", version = "1.1.1")'
 
