@@ -11,6 +11,8 @@ run_inflow_model <- function(site_id,
   
   if((!is.null(forecast_start_datetime)) && (forecast_horizon > 0)){
     
+    print('inside of run_inflow_model')
+    
     forecast_date <- lubridate::as_date(forecast_start_datetime) - lubridate::days(1)
     forecast_hour <- lubridate::hour(forecast_start_datetime)
     
@@ -80,6 +82,7 @@ run_inflow_model <- function(site_id,
       right_join(forecast_temp, by = c('date'))
     
     
+    print('done setting up met data')
     
     ## RUN PREDICTIONS
     sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
