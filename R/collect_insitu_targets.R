@@ -22,11 +22,10 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   print('obs_df')
   print(names(obs_df))
   
-  
   group_insitu <- obs_df |> 
     mutate(Date = as.Date(datetime)) |> 
-    mutate(hour = lubridate::hour(datetime)) |> 
-    filter(hour < 1) 
+    mutate(hour = lubridate::hour(datetime)) #|> 
+    #filter(hour == 0)
   
   print('group_insitu')
   print(names(group_insitu))
