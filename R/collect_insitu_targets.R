@@ -40,13 +40,15 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     distinct(Date, variable, .keep_all = TRUE) |> 
     mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "UTC")) |> 
     mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6)
-    select(datetime, site_id, depth, observation, variable)
+    dplyr::select(datetime, site_id, depth, observation, variable)
   
   print('cleaned_insitu_file')
   print(names(cleaned_insitu_file))
   
+  print('trying roll temp')
+  
   roll_temp <- cleaned_insitu_file |> 
-    filter(variable == 'temperature', 
+    dplyr::filter(variable == 'temperature', 
            observation != 0) |> 
     arrange(datetime) |> 
     mutate(mean_roll = RcppRoll::roll_mean(x = observation, n = 7, fill = NA, na.rm = TRUE)) |> 
@@ -75,7 +77,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   
   
   roll_salt <- cleaned_insitu_file |>
-    filter(variable == 'salt') |>
+    dplyr::filter(variable == 'salt') |>
     arrange(datetime) |> 
     filter(!(observation == 0))
   
