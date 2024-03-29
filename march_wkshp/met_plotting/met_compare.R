@@ -126,9 +126,9 @@ met_noaa_obs |>
 
 
 ### Shortwave 
-df_past_ws <- arrow::open_dataset(met_s3_past) |> 
+df_past_sw <- arrow::open_dataset(met_s3_past) |> 
   #select(datetime, parameter, variable, prediction) |> 
-  filter(variable %in% c("eastward_wind", 'northward_wind'),
+  filter(variable %in% c('surface_downwelling_shortwave_flux_in_air'),
          # ((datetime <= min_datetime  & variable == "precipitation_flux") | 
          #    datetime < min_datetime  & variable == "air_temperature"),
          datetime > years_prior) |> 
@@ -139,42 +139,44 @@ df_past_ws <- arrow::open_dataset(met_s3_past) |>
   select(-reference_datetime) |> 
   mutate(Date = as.Date(datetime)) |> 
   filter(lubridate::hour(datetime) == 0) |> 
-  group_by(Date, variable) |> 
-  mutate(prediction = mean(prediction, na.rm = TRUE)) |> 
-  ungroup() |> 
+  #group_by(Date, variable) |> 
+  #mutate(prediction = mean(prediction, na.rm = TRUE)) |> 
+  #ungroup() |> 
   pivot_wider(names_from = variable, values_from = prediction) |> 
-  mutate(windspeed = sqrt(eastward_wind**2 + northward_wind**2)) |> 
   distinct(Date, .keep_all = TRUE)
 
 ### Observed data for CANN
 sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
 
-wind_sites <- c('sensor_repository_84749')
+sw_sites <- c('sensor_repository_00962')
 
-wind_obs_df <- awss3Connect_sensorcode(sensorCodes = wind_sites, code_df = sensorcode_df) |> 
+sw_obs_df <- awss3Connect_sensorcode(sensorCodes = sw_sites, code_df = sensorcode_df) |> 
   select(-QC, -Date)
 
-cleaned_met_file_ws <- wind_obs_df |> 
+cleaned_met_file_sw <- sw_obs_df |> 
   mutate(Date = as.Date(datetime)) |> 
-  filter(lubridate::hour(datetime) == 0) |> # only want midnight observations for the daily value
-  group_by(Date, variable) |> 
-  mutate(observation = mean(Data, na.rm = TRUE)) |> 
-  ungroup() |> 
-  distinct(Date, variable, .keep_all = TRUE) |> 
+  #filter(lubridate::hour(datetime) == 12) |> # only want midnight observations for the daily value
+  drop_na(Data) |> 
+  #group_by(Date, variable) |> 
+  #mutate(observation = mean(Data, na.rm = TRUE)) |> 
+  #ungroup() |> 
+  #distinct(Date, variable, .keep_all = TRUE) |> 
   mutate(datetime = as.POSIXct(paste(Date, '00:00:00'), tz = "UTC")) |> 
-  select(datetime, wind_obs = observation)
+  select(datetime, sw_obs = Data)
 #mutate(depth = 1.5) |> # assign depth to match model config depths (median depth value is 1.6)
 #select(datetime, site_id, depth, observation, variable)
 
-met_noaa_obs <- df_past_ws |> 
-  right_join(cleaned_met_file_ws, by=c('datetime')) |> 
-  drop_na(variable)
+met_noaa_obs <- df_past_sw |> 
+  right_join(cleaned_met_file_sw, by=c('datetime')) |> 
+  drop_na(surface_downwelling_shortwave_flux_in_air)
 
 met_noaa_obs |> 
   ggplot(aes(x = Date)) +
-  geom_point(aes(y=windspeed), alpha = 0.5) +
-  geom_line(aes(y=wind_obs), color = 'red') +
-  ylab('Wind Speed (m/s)')
+  geom_point(aes(y=sw_obs), alpha = 0.5) +
+  geom_line(aes(y=surface_downwelling_shortwave_flux_in_air), color = 'red') +
+  ylab('Short Wave (W/m2)')
+
+df_past_sherry <- arrow::open_dataset(met_s3_past) |> filter(variable %in% c('surface_downwelling_shortwave_flux_in_air', 'eastward_wind', 'northward_wind')) |> collect()
 
 # 
 # # combine past and future noaa data
