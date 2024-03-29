@@ -53,10 +53,10 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     mutate(sd_roll = RcppRoll::roll_sd(x = mean_roll, n = 7, fill = NA, na.rm = TRUE)) |> 
     mutate(mean_roll = zoo::na.fill(mean_roll, "extend")) |> 
     mutate(sd_roll = zoo::na.fill(sd_roll, "extend")) |>
-    #mutate(obs_test = observation < (mean_roll - (sd_roll*2))) |> 
-    #mutate(obs_num = mean_roll - (sd_roll*3)) |> 
-    dplyr::filter(!(sd_roll > 1 & (observation < (mean_roll - (sd_roll*3)))), 
-           !(sd_roll > 1 & (observation < (mean_roll + (sd_roll*3)))))
+    mutate(sd_check_under = mean_roll - (sd_roll*3)) |> 
+    mutate(sd_check_over = mean_roll + (sd_roll*3)) |> 
+    dplyr::filter(!(sd_roll > 1 & (observation < sd_check_under)), 
+           !(sd_roll > 1 & (observation < sd_check_over)))
   
   print('roll_temp')
   print(names(roll_temp))
