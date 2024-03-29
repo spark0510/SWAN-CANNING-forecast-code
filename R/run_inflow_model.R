@@ -137,9 +137,9 @@ run_inflow_model <- function(site_id,
     }
     
     if(use_s3_inflow){
-      FLAREr:::arrow_env_vars()
+      #FLAREr:::arrow_env_vars()
       inflow_s3 <- arrow::s3_bucket(bucket = file.path(inflow_bucket, inflow_forecast_path), endpoint_override = inflow_endpoint)
-      on.exit(FLAREr:::unset_arrow_vars(vars))
+      #on.exit(FLAREr:::unset_arrow_vars(vars))
     }else{
       inflow_s3 <- arrow::SubTreeFileSystem$create(file.path(inflow_local_directory, inflow_forecast_path))
     }
