@@ -79,7 +79,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   roll_salt <- cleaned_insitu_file |>
     dplyr::filter(variable == 'salt') |>
     arrange(datetime) |> 
-    filter(!(observation == 0))
+    dplyr::filter(!(observation == 0))
   
   updated_data <- bind_rows(roll_temp, roll_salt)
   
