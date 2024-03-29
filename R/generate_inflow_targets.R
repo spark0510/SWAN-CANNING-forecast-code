@@ -2,7 +2,7 @@
 server_name_sc <- "test_server_1"
 
 ## COLLECT PROFILE DATA FROM INFLOW
-profile_obs_df <- awss3Connect(filename = 'arms/wiski.csv', server_name = server_name_sc)
+#profile_obs_df <- awss3Connect(filename = 'arms/wiski.csv')
 
 inflow_sites <- c('YULEB', 'STHNR', 'CANNR') # taken from the dashboard as locations upstream of the study site
 
