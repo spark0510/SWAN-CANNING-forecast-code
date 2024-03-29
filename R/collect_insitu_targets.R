@@ -25,7 +25,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
   group_insitu <- obs_df |> 
     mutate(Date = as.Date(datetime)) |> 
     mutate(hour = lubridate::hour(datetime))
-  print(group_insitu)
+  #print(group_insitu)
   
   group_insitu <- group_insitu |> 
     dplyr::filter(hour == 0)
@@ -55,7 +55,7 @@ collect_insitu_targets <- function(obs_download, site_location, assign_depth){
     mutate(sd_roll = zoo::na.fill(sd_roll, "extend")) |>
     #mutate(obs_test = observation < (mean_roll - (sd_roll*2))) |> 
     #mutate(obs_num = mean_roll - (sd_roll*3)) |> 
-    filter(!(sd_roll > 1 & (observation < (mean_roll - (sd_roll*3)))), 
+    dplyr::filter(!(sd_roll > 1 & (observation < (mean_roll - (sd_roll*3)))), 
            !(sd_roll > 1 & (observation < (mean_roll + (sd_roll*3)))))
   
   print('roll_temp')
