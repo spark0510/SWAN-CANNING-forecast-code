@@ -37,8 +37,10 @@ endpoint <- 'renc.osn.xsede.org'
 inflow_forecast <- run_inflow_model(site_id = site_identifier, 
                                     forecast_start_datetime = reference_datetime, 
                                     use_s3_inflow = config$run_config$use_s3, 
-                                    inflow_bucket = config$s3$inflow_drivers$bucket,
-                                    inflow_endpoint = config$s3$inflow_drivers$endpoint,
+                                    inflow_server_name = config$s3$inflow_drivers$server_name,
+                                    inflow_folder = config$s3$inflow_drivers$folder,
+                                    #inflow_bucket = config$s3$inflow_drivers$bucket,
+                                    #inflow_endpoint = config$s3$inflow_drivers$endpoint,
                                     inflow_local_directory = file.path(lake_directory, "drivers/inflow"), 
                                     forecast_horizon = config$run_config$forecast_horizon, 
                                     inflow_model = config$inflow$forecast_inflow_model)

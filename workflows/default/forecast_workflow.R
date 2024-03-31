@@ -6,10 +6,10 @@ library(RcppRoll)
 
 fresh_run <- FALSE
 
-Sys.setenv("AWS_DEFAULT_REGION" = "renc",
-           "AWS_S3_ENDPOINT" = "osn.xsede.org",
-           "USE_HTTPS" = TRUE,
-           "SC_S3_ENDPOINT" = "projects.pawsey.org.au")
+#Sys.setenv("AWS_DEFAULT_REGION" = "renc",
+#           "AWS_S3_ENDPOINT" = "osn.xsede.org",
+#           "USE_HTTPS" = TRUE,
+#           "SC_S3_ENDPOINT" = "projects.pawsey.org.au")
 
 lake_directory <- here::here()
 setwd(lake_directory)
@@ -74,9 +74,12 @@ while(noaa_ready){
                              configure_flare = config$run_config$configure_flare, 
                              configure_obs = config$run_config$configure_obs, 
                              use_s3 = config$run_config$use_s3,
-                             bucket = config$s3$warm_start$bucket,
-                             endpoint = config$s3$warm_start$endpoint,
-                             use_https = TRUE)
+                             server_name = config$s3$warm_start$server_name,
+                             folder = config$s3$warm_start$folder
+                             #bucket = config$s3$warm_start$bucket,
+                             #endpoint = config$s3$warm_start$endpoint,
+                             #use_https = TRUE
+                             )
   
   #RCurl::url.exists("https://hc-ping.com/551392ce-43f3-49b1-8a57-6a60bad1c377", timeout = 5)
   

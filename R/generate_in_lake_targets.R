@@ -3,6 +3,7 @@ source('R/fct_awss3Connect.R')
 source('R/collect_insitu_targets.R')
 source('R/collect_profile_targets.R')
 
+server_name_sc <- "test_server_1"
 
 # COLLECT INSITU SENSOR DATA
 all_site_codes <- c('sensor_repository_81684', 'sensor_repository_81685', # Bacon Down (temp, salt)
@@ -10,7 +11,7 @@ all_site_codes <- c('sensor_repository_81684', 'sensor_repository_81685', # Baco
                     'sensor_repository_81768', 'sensor_repository_81769', # Nicholson Down
                     'sensor_repository_81782', 'sensor_repository_81783') # Nicholson Up
 
-insitu_obs_df <- awss3Connect_sensorcode(sensorCodes = all_site_codes, code_df = sensorcode_df) |> 
+insitu_obs_df <- awss3Connect_sensorcode(sensorCodes = all_site_codes, code_df = sensorcode_df, server_name = server_name_sc) |> 
   select(-QC, -Date)
 
 lake_insitu_df <- collect_insitu_targets(obs_download = insitu_obs_df, 
@@ -19,7 +20,7 @@ lake_insitu_df <- collect_insitu_targets(obs_download = insitu_obs_df,
 
 
 # COLLECT PROFILE DATA 
-profile_obs_df <- awss3Connect(filename = 'arms/wiski.csv')
+profile_obs_df <- awss3Connect(filename = 'arms/wiski.csv', server_name = server_name_sc)
 lake_profile_sites <- c('BAC','BACD300','BACD500','BACU300','CASMID','ELL','GRE','KEN',
                         'KENU300','KS7','KS9','MACD50','MASD50','NIC','NIC-IN',
                         'NICD200','PAC','PO2','RIV','SAL','SCB2') 

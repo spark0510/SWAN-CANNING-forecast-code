@@ -1,28 +1,28 @@
 s3:
   drivers:
-    endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/drivers/met
+    server_name: renc.osn.xsede.org
+    folder: bio230121-bucket01/flare/drivers/met
   # drivers:
-  #   endpoint: s3.flare-forecast.org
+  #   server_name: s3.flare-forecast.org
   #   bucket: drivers/noaa/gefs-v12-reprocess
   inflow_drivers:
-    endpoint: s3.flare-forecast.org
-    bucket: drivers/inflow/CANN/parquet
+    server_name: s3.flare-forecast.org
+    folder: drivers/inflow/CANN/parquet
   targets:
-    endpoint: s3.flare-forecast.org
-    bucket: targets/CANN
+    server_name: s3.flare-forecast.org
+    folder: targets/CANN
   forecasts:
-    endpoint: s3.flare-forecast.org
-    bucket: forecasts
+    server_name: s3.flare-forecast.org
+    folder: forecasts
   forecasts_parquet:
-    endpoint: s3.flare-forecast.org
-    bucket: forecasts/parquet
+    server_name: s3.flare-forecast.org
+    folder: forecasts/parquet
   warm_start:
-    endpoint: s3.flare-forecast.org
-    bucket: restart/CANN
+    server_name: s3.flare-forecast.org
+    folder: restart/CANN
   scores:
-    endpoint: s3.flare-forecast.org
-    bucket: scores/parquet
+    server_name: s3.flare-forecast.org
+    folder: scores/parquet
 location:
    site_id: CANN
    name: Swan-Canning River
