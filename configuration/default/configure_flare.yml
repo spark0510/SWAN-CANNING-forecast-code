@@ -1,25 +1,25 @@
 s3:
   drivers:
-    endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/drivers/met/gefs-v12
+    server_name: renc.osn.xsede.org
+    folder: bio230121-bucket01/flare/drivers/met/gefs-v12
   inflow_drivers:
-    endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/drivers/inflow/CANN
+    server_name: renc.osn.xsede.org
+    folder: bio230121-bucket01/flare/drivers/inflow/CANN
   targets:
-    endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/targets
+    server_name: renc.osn.xsede.org
+    folder: bio230121-bucket01/flare/targets
   forecasts:
-    endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/forecasts/netcdf
+    server_name: renc.osn.xsede.org
+    folder: bio230121-bucket01/flare/forecasts/netcdf
   forecasts_parquet:
-    endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/forecasts/parquet
+    server_name: renc.osn.xsede.org
+    folder: bio230121-bucket01/flare/forecasts/parquet
   warm_start:
-    endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/restart
+    server_name: renc.osn.xsede.org
+    folder: bio230121-bucket01/flare/restart
   scores:
-    endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/scores/parquet
+    server_name: renc.osn.xsede.org
+    folder: bio230121-bucket01/flare/scores/parquet
 location:
    site_id: CANN
    name: Swan-Canning River

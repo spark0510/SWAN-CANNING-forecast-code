@@ -1,3 +1,5 @@
+
+server_name_sc <- "test_server_1"
 source('R/fct_awss3Connect_sensorcode.R')
 sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
 
@@ -9,7 +11,7 @@ config_obs <- FLAREr::initialize_obs_processing(lake_directory, observation_yml 
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
 met_download <- awss3Connect_sensorcode(sensorCodes = c('sensor_repository_84745', 'sensor_repository_84749', 'sensor_repository_00954', 'sensor_repository_00962'), 
-                                        code_df = sensorcode_df)
+                                        code_df = sensorcode_df, server_name = server_name_sc)
 
 # remove duplicates 
 met_dedup <- met_download |> distinct(datetime, variable, .keep_all = TRUE)

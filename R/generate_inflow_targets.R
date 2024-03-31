@@ -1,4 +1,5 @@
 
+server_name_sc <- "test_server_1"
 
 ## COLLECT PROFILE DATA FROM INFLOW
 #profile_obs_df <- awss3Connect(filename = 'arms/wiski.csv')
@@ -31,7 +32,7 @@ inflow_profile_depth_avg$variable <- ifelse(inflow_profile_depth_avg$variable ==
 source('R/collect_insitu_targets.R')
 upstream_site_code <- c('sensor_repository_81782', 'sensor_repository_81783') #Nicholson Upstream
 
-mock_inflow_obs_df <- awss3Connect_sensorcode(sensorCodes = upstream_site_code, code_df = sensorcode_df) |> 
+mock_inflow_obs_df <- awss3Connect_sensorcode(sensorCodes = upstream_site_code, code_df = sensorcode_df, server_name = server_name_sc) |>
   select(-QC, -Date)
 
 mock_inflow_insitu_df <- collect_insitu_targets(obs_download = mock_inflow_obs_df, 
@@ -49,8 +50,8 @@ sensorcode_df <- read_csv('configuration/default/sensorcode.csv')
 cann_flow_codes <- 'sensor_repository_00804'
 south_flow_codes <- 'sensor_repository_00752'
 
-cann_inflow_download <- awss3Connect_sensorcode(sensorCodes = cann_flow_codes, code_df = sensorcode_df)
-south_inflow_download <- awss3Connect_sensorcode(sensorCodes = cann_flow_codes, code_df = sensorcode_df)
+cann_inflow_download <- awss3Connect_sensorcode(sensorCodes = cann_flow_codes, code_df = sensorcode_df, server_name = server_name_sc)
+south_inflow_download <- awss3Connect_sensorcode(sensorCodes = south_flow_codes, code_df = sensorcode_df, server_name = server_name_sc)
 
 cann_inflow_download$flow_source <- 'cann_river'
 south_inflow_download$flow_source <- 'south_river'

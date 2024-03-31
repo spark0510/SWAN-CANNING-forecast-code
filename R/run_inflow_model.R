@@ -3,8 +3,12 @@
 run_inflow_model <- function(site_id, 
                              forecast_start_datetime,
                              use_s3_inflow = FALSE, 
-                             inflow_bucket = NULL,
-                             inflow_endpoint = NULL,
+                             inflow_server_name = NULL,
+                             inflow_folder = NULL,
+                             driver_server_name = NULL,
+                             driver_folder = NULL,
+                             #inflow_bucket = NULL,
+                             #inflow_endpoint = NULL,
                              inflow_local_directory = NULL, 
                              forecast_horizon = NULL, 
                              inflow_model = NULL){
@@ -18,9 +22,11 @@ run_inflow_model <- function(site_id,
     
     ## pull in future NOAA data 
     
-    met_s3_future <- arrow::s3_bucket(file.path("bio230121-bucket01/flare/drivers/met/gefs-v12/stage2",paste0("reference_datetime=",noaa_date),paste0("site_id=",site_id)),
-                                      endpoint_override = endpoint,
-                                      anonymous = TRUE)
+    #met_s3_future <- arrow::s3_bucket(file.path("bio230121-bucket01/flare/drivers/met/gefs-v12/stage2",paste0("reference_datetime=",noaa_date),paste0("site_id=",site_id)),
+    #                                  endpoint_override = endpoint,
+    #                                  anonymous = TRUE)
+    met_s3_future <- FaaSr::faasr_arrow_s3_bucket(server_name=driver_server_name, 
+                                                  faasr_prefix=file.path(driver_folder, "stage2", paste0("reference_datetime=",noaa_date),paste0("site_id=",site_id)))
     # old method
     # met_s3_future <- arrow::s3_bucket(file.path(config$s3$drivers$bucket,
     #                                             paste0("stage2/parquet/0/", forecast_date),
@@ -40,9 +46,11 @@ run_inflow_model <- function(site_id,
     
     
     ## pull in past NOAA data
-    met_s3_past <- arrow::s3_bucket(paste0("bio230121-bucket01/flare/drivers/met/gefs-v12/stage3/site_id=",site_id),
-                                    endpoint_override = endpoint,
-                                    anonymous = TRUE)
+    #met_s3_past <- arrow::s3_bucket(paste0("bio230121-bucket01/flare/drivers/met/gefs-v12/stage3/site_id=",site_id),
+    #                                endpoint_override = endpoint,
+    #                                anonymous = TRUE)
+    met_s3_past <- FaaSr::faasr_arrow_s3_bucket(server_name=driver_server_name, 
+                                                faasr_prefix=file.path(driver_folder, paste0("stage3/site_id=",site_id)))
     
     years_prior <- reference_datetime - lubridate::days(1825) # 5 years
     
@@ -141,7 +149,9 @@ run_inflow_model <- function(site_id,
     
     if(use_s3_inflow){
       #FLAREr:::arrow_env_vars()
-      inflow_s3 <- arrow::s3_bucket(bucket = file.path(inflow_bucket, inflow_forecast_path), endpoint_override = inflow_endpoint)
+      #inflow_s3 <- arrow::s3_bucket(bucket = file.path(inflow_bucket, inflow_forecast_path), endpoint_override = inflow_endpoint)
+      inflow_s3 <- FaaSr::faasr_arrow_s3_bucket(server_name=inflow_server_name, 
+                                                faasr_prefix=file.path(inflow_folder, inflow_forecast_path))
       #on.exit(FLAREr:::unset_arrow_vars(vars))
     }else{
       inflow_s3 <- arrow::SubTreeFileSystem$create(file.path(inflow_local_directory, inflow_forecast_path))
