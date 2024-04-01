@@ -19,12 +19,20 @@ site_id <- "CANN"
 #configure_run_file <- paste0("configure_run_",forecast_site,".yml")
 configure_run_file <- "configure_run.yml"
 config_set_name <- "default"
+FaaSr::faasr_get_files(remote_folder=configure_set_name, 
+                       remote_file=configure_run_file, 
+                       local_folder=config_set_name, 
+                       local_file=configure_run_file)
 
 config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
 
 if(fresh_run) unlink(file.path(lake_directory, "restart", "CANN", config$run_config$sim_name, configure_run_file))
 
 # Read in the targets
+FaaSr::faasr_get_files(remote_folder="workflows/default", 
+                       remote_file="generate_targets.R", 
+                       local_folder="workflows/default", 
+                       local_file="generate_targets.R")
 source('workflows/default/generate_targets.R')
 
 # Move targets to s3 bucket
@@ -52,6 +60,10 @@ while(noaa_ready){
   config <- FLAREr::set_configuration(configure_run_file,lake_directory, config_set_name = config_set_name)
   
   # ## run inflow forecast
+  FaaSr::faasr_get_files(remote_folder="R", 
+                         remote_file="run_inflow_forecast_full.R", 
+                         local_folder="R", 
+                         local_file="run_inflow_forecast_full.R")
   source('R/run_inflow_forecast_full.R')
   
   # Run FLARE

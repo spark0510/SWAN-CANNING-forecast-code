@@ -1,0 +1,41 @@
+{
+    "ComputeServers": {
+        "My_GitHub_Account": {
+            "FaaSType": "GitHubActions",
+            "UserName": "spark0510",
+            "ActionRepoName": "flarer-test",
+            "Branch": "main"
+        }
+    },
+    "DataStores": {
+        "My_Minio_Bucket": {
+            "Endpoint": "http://149.165.159.29:9000",
+            "Bucket": "faasr-flare",
+            "Writable": "TRUE"
+        }
+    },
+    "FunctionList": {
+        "faasr_flare_test": {
+            "FunctionName": "faasr_flare_test",
+            "FaaSServer": "My_GitHub_Account"
+        }
+    },
+    "ActionContainers": {
+        "faasr_flare_test": "ghcr.io/faasr/github-actions-tidyverse"
+    },
+    "FunctionGitHubPackage": {
+        "faasr_flare_test": "spark0510/FLAREr"
+    },
+    "FunctionGitRepo": {
+        "faasr_flare_test": [
+            "spark0510/SWAN-CANNING-forecast-code/workflows/default/forecast_workflow.R",
+            "spark0510/SWAN-CANNING-forecast-code/workflows/R/fct_awss3Connect.R",
+            "spark0510/SWAN-CANNING-forecast-code/workflows/R/fct_awss3Connect_sensor.R",
+            "spark0510/SWAN-CANNING-forecast-code/workflows/R/fct_awss3Connect_sensor.R",
+        ]
+    },
+    "FunctionInvoke": "faasr_flare_test",
+    "FaaSrLog": "FaaSrLog",
+    "DefaultDataStore": "My_Minio_Bucket"
+}
+
