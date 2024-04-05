@@ -31,7 +31,7 @@ awss3Connect_sensorcode <- function(sensorCodes, code_df, server_name){
     #                                     region = "",
     #                                     key = Sys.getenv('SC_AWS_KEY'),
     #                                     secret = Sys.getenv('SC_AWS_SECRET')))
-    FaaSr::faasr_get_files(server_name=server_name , 
+    FaaSr::faasr_get_file(server_name=server_name , 
                            remote_folder="", 
                            remote_file=object, 
                            local_folder=".", 

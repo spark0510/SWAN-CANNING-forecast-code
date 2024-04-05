@@ -40,7 +40,7 @@ awss3Connect <- function(filename, server_name){
   #                                      region = "",
   #                                      key = Sys.getenv('SC_AWS_KEY'),
   #                                      secret = Sys.getenv('SC_AWS_SECRET')))
-  FaaSr::faasr_get_files(server_name=server_name , 
+  FaaSr::faasr_get_file(server_name=server_name , 
                          remote_folder="", 
                          remote_file=filename, 
                          local_folder=".", 

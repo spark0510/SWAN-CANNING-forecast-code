@@ -1,25 +1,25 @@
 s3:
   drivers:
-    server_name: renc.osn.xsede.org
-    folder: bio230121-bucket01/flare/drivers/met/gefs-v12
+    server_name: My_Minio_Bucket
+    folder: flare/drivers/met/gefs-v12
   inflow_drivers:
-    server_name: renc.osn.xsede.org
-    folder: bio230121-bucket01/flare/drivers/inflow/CANN
+    server_name: My_Minio_Bucket
+    folder: flare/drivers/inflow/CANN
   targets:
-    server_name: renc.osn.xsede.org
-    folder: bio230121-bucket01/flare/targets
+    server_name: My_Minio_Bucket
+    folder: flare/targets
   forecasts:
-    server_name: renc.osn.xsede.org
-    folder: bio230121-bucket01/flare/forecasts/netcdf
+    server_name: My_Minio_Bucket
+    folder: flare/forecasts/netcdf
   forecasts_parquet:
-    server_name: renc.osn.xsede.org
-    folder: bio230121-bucket01/flare/forecasts/parquet
+    server_name: My_Minio_Bucket
+    folder: flare/forecasts/parquet
   warm_start:
-    server_name: renc.osn.xsede.org
-    folder: bio230121-bucket01/flare/restart
+    server_name: My_Minio_Bucket
+    folder: flare/restart
   scores:
-    server_name: renc.osn.xsede.org
-    folder: bio230121-bucket01/flare/scores/parquet
+    server_name: My_Minio_Bucket
+    folder: flare/scores/parquet
 location:
    site_id: CANN
    name: Swan-Canning River
